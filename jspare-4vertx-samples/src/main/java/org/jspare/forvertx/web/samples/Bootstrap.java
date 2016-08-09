@@ -48,14 +48,14 @@ public class Bootstrap extends Application {
 	}
 	
 	@Override
-	protected void start() {
+	protected void start() throws InfraException {
 
 		// With all registered and configured is the time to start your
 		// application at this time all settings are validated and configured.
 		// your application will start here.
 		
 		// The super method need be called for execute the lifecyle of your application
-		super.load();
+		super.start();
 	}
 
 	public static void main(String[] args) throws InfraException {
