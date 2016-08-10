@@ -21,6 +21,9 @@ import org.jspare.core.commons.Definitions;
 
 public interface ApplicationDefinitions extends Definitions {
 
+	/** The Constant ROUTES_PACKAGE */
+	String ROUTES_PACKAGE = ".routes";
+
 	/** The Constant SERVER_PORT_KEY. */
 	String SERVER_PORT_KEY = "server.default.port";
 

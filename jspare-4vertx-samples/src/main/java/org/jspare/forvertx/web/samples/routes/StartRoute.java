@@ -16,7 +16,7 @@
 package org.jspare.forvertx.web.samples.routes;
 
 import org.jspare.forvertx.web.handler.Handling;
-import org.jspare.forvertx.web.mapping.Handler;
+import org.jspare.forvertx.web.mapping.handlers.Handler;
 import org.jspare.forvertx.web.mapping.method.Get;
 
 @Get("/start")

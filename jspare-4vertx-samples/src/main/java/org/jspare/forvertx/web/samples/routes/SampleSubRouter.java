@@ -1,9 +1,9 @@
 package org.jspare.forvertx.web.samples.routes;
 
-import org.jspare.forvertx.web.mapping.Handler;
-import org.jspare.forvertx.web.mapping.IgnoreSubRouter;
-import org.jspare.forvertx.web.mapping.SubRouter;
+import org.jspare.forvertx.web.mapping.handlers.Handler;
 import org.jspare.forvertx.web.mapping.method.Get;
+import org.jspare.forvertx.web.mapping.subrouter.IgnoreSubRouter;
+import org.jspare.forvertx.web.mapping.subrouter.SubRouter;
 
 import io.vertx.ext.web.RoutingContext;
 

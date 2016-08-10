@@ -13,16 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.mapping;
+package org.jspare.forvertx.web.mapping.content;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Interface Parameter.
+ *
+ * @author pflima
+ * @since 09/05/2016
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Before {
+@Target({ ElementType.PARAMETER })
+public @interface Produces {
 
-	Class<?>[] value();
+	/**
+	 * Value.
+	 *
+	 * @return the string
+	 */
+	String value();
 }

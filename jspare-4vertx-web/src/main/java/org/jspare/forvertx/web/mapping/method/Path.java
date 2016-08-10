@@ -13,14 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.mapping;
+package org.jspare.forvertx.web.mapping.method;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.commons.lang.StringUtils;
+
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
-public @interface IgnoreSubRouter {
+@Target({ ElementType.TYPE, ElementType.METHOD })
+public @interface Path {
+
+	String value() default StringUtils.EMPTY;
+
+	boolean regex() default false;
 }

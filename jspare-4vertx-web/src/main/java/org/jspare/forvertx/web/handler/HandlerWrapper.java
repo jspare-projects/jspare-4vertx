@@ -13,21 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.mapping;
+package org.jspare.forvertx.web.handler;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.vertx.ext.web.Route;
+import io.vertx.ext.web.Router;
 
-/**
- * The Interface Model.
- *
- * @author pflima
- * @since 22/04/2016
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD })
-public @interface Model {
+public class HandlerWrapper {
 
+	public static void prepareHandler(Router router, HandlerData data) {
+
+		Route route = router.route();
+		setMethod(route, data.httpMethod());
+
+	}
+
+	private static void setMethod(Route route, String httpMethod) {
+
+	}
 }

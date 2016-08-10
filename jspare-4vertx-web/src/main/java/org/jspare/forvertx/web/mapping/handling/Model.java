@@ -13,16 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.mapping;
+package org.jspare.forvertx.web.mapping.handling;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Interface Model.
+ *
+ * @author pflima
+ * @since 22/04/2016
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
-public @interface FailureHandler {
-	
-	int order() default 0;
+@Target({ ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD })
+public @interface Model {
+
 }
