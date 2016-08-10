@@ -42,7 +42,7 @@ public class Bootstrap extends Application {
 		// Its components have not been initialized in the container, you can
 		// now load and determine the behavior of your APPLICATION.
 		
-		VertxTransporter transporter = manager.create(VertxBuilder.create());
+		VertxTransporter transporter = manager.create(VertxBuilder.create(this));
 		transporter.router();
 		transporter.httpServer().listen();
 	}

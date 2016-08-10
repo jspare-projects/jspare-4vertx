@@ -113,7 +113,7 @@ public class VertxBuilder {
 
 		}
 
-		return new VertxTransporter(this.name, vertx(), httpServer(), router());
+		return new VertxTransporter(name(), vertx(), httpServer(), router());
 	}
 
 	public String name() {
@@ -178,7 +178,7 @@ public class VertxBuilder {
 	protected Vertx vertx() {
 
 		if (vertx == null)
-			Vertx.vertx(vertxOptions);
+			vertx = Vertx.vertx(vertxOptions);
 		return vertx;
 	}
 }

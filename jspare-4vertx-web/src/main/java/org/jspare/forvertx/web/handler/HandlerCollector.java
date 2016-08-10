@@ -17,14 +17,17 @@ package org.jspare.forvertx.web.handler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.jspare.core.exception.InfraRuntimeException;
 import org.jspare.forvertx.web.mapping.content.Consumes;
 import org.jspare.forvertx.web.mapping.content.Produces;
 import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
@@ -52,14 +55,20 @@ public class HandlerCollector {
 
 	public static Set<HandlerData> collect(Class<?> clazz, Set<Middleware> beforeMiddleware, Set<Middleware> afterMiddleware) {
 
-		Set<HandlerData> handlers = new HashSet<>();
+		Set<HandlerData> collectedHandlers = new HashSet<>();
+		
+		List<Class<? extends Annotation>> clazzHttpMethods = new ArrayList<>(getHttpMethodsPresents(clazz)); 
+		
 		for (Method method : clazz.getDeclaredMethods()) {
 
 			if (!isHandler(method)) {
 
 				continue;
 			}
-
+			
+			final List<Class<? extends Annotation>> handlerHttpMethods = new ArrayList<>();
+			handlerHttpMethods.addAll(clazzHttpMethods);
+			
 			String consumes = method.isAnnotationPresent(Consumes.class) ? method.getAnnotation(Consumes.class).value() : StringUtils.EMPTY;
 			String produces = method.isAnnotationPresent(Produces.class) ? method.getAnnotation(Produces.class).value() : StringUtils.EMPTY;
 
@@ -68,6 +77,12 @@ public class HandlerCollector {
 			defaultHandlerData.before().addAll(collectBeforeMiddlewares(method));
 			defaultHandlerData.after(afterMiddleware);
 			defaultHandlerData.after().addAll(collectAfterMiddlewares(method));
+
+			if(hasHttpMethodsPresents(method)){
+				
+				handlerHttpMethods.clear();
+				handlerHttpMethods.addAll(getHttpMethodsPresents(method));
+			} 
 
 			getHandlersPresents(method).forEach(handlerType -> {
 
@@ -84,13 +99,13 @@ public class HandlerCollector {
 
 						handlerData.handlerType(HandlerType.BLOCKING);
 					}
+					
+					if (handlerHttpMethods.isEmpty()) {
 
-					if (hasMethodsPresents(clazz)) {
-
-						handlers.addAll(collectByMethods(handlerData));
+						collectedHandlers.add(handlerData);
 					} else {
 
-						handlers.add(handlerData);
+						collectedHandlers.addAll(collectByMethods(handlerData, handlerHttpMethods));
 					}
 
 				} catch (Exception e) {
@@ -99,46 +114,16 @@ public class HandlerCollector {
 				}
 			});
 
-			handlers.add(defaultHandlerData);
+			collectedHandlers.add(defaultHandlerData);
 
 		}
-		return handlers;
-	}
-
-	private static Collection<HandlerData> collectByMethods(HandlerData handlerSource) {
-
-		return getMethodsPresents(handlerSource.getClass()).stream().map(method -> {
-
-			try {
-
-				HandlerData handlerData = (HandlerData) handlerSource.clone();
-
-				String prefix = StringUtils.EMPTY;
-				String path = StringUtils.EMPTY;
-				int order = 0;
-
-				if (handlerData.getClass().isAnnotationPresent(SubRouter.class)
-						&& !handlerData.method().isAnnotationPresent(IgnoreSubRouter.class)) {
-
-					prefix = handlerData.getClass().getAnnotation(SubRouter.class).value();
-				}
-
-				handlerData.path(String.format("%s%s", prefix, path));
-				handlerData.order(order);
-
-				return handlerData;
-			} catch (Exception e) {
-
-				log.warn("Ignoring handler class {} method {} - {}", handlerSource.getClass().getName(), method.getName(), e);
-			}
-			return null;
-		}).collect(Collectors.toList());
+		return collectedHandlers;
 	}
 
 	private static Collection<? extends Middleware> collectAfterMiddlewares(Method method) {
 		if (!method.isAnnotationPresent(Before.class)) {
 
-			return Arrays.asList();
+			return Collections.emptyList();
 		}
 		Before before = method.getAnnotation(Before.class);
 		return Arrays.asList(before.value()).stream().map(clazz -> {
@@ -156,7 +141,7 @@ public class HandlerCollector {
 
 		if (!method.isAnnotationPresent(Before.class)) {
 
-			return Arrays.asList();
+			return Collections.emptyList();
 		}
 		Before before = method.getAnnotation(Before.class);
 		return Arrays.asList(before.value()).stream().map(clazz -> {
@@ -165,33 +150,75 @@ public class HandlerCollector {
 
 				return (Middleware) clazz.newInstance();
 			} catch (Exception e) {
-				return null;
+
+				throw new InfraRuntimeException(String.format("Cannot load handler of method %s invalid middleware %s", method.getName(), clazz.getName()), e);
 			}
 		}).collect(Collectors.toList());
 	}
 
-	private static boolean isHandler(Method method) {
+	private static Collection<HandlerData> collectByMethods(HandlerData handlerSource, List<Class<? extends Annotation>> clazzHttpMethods) {
 
-		return getHandlersPresents(method).stream().filter(method::isAnnotationPresent).count() >= 1;
-	}
+		return clazzHttpMethods.stream().map(clazzHttpMethod -> {
+			
+			try {
 
-	private static List<Class<? extends Annotation>> getMethodsPresents(Class<?> clazz) {
+				HandlerData handlerData = (HandlerData) handlerSource.clone();
 
-		return Arrays.asList(Connect.class, Delete.class, Get.class, Head.class, Options.class, Other.class, Path.class, Post.class,
-				Put.class, Trace.class).stream().filter(clazz::isAnnotationPresent).collect(Collectors.toList());
+				String prefix = StringUtils.EMPTY;
+				String path = StringUtils.EMPTY;
+				int order = 0;
 
+				if (handlerData.getClass().isAnnotationPresent(SubRouter.class) && !handlerData.method().isAnnotationPresent(IgnoreSubRouter.class)) {
+
+					prefix = handlerData.getClass().getAnnotation(SubRouter.class).value();
+				}
+				
+				Annotation annotation = clazzHttpMethod.newInstance();
+				Method valueMethod = annotation.annotationType().getDeclaredMethod("value");
+				Method orderMethod = annotation.annotationType().getDeclaredMethod("order");
+				path = (String) valueMethod.invoke(annotation);
+				order = (int) valueMethod.invoke(orderMethod);
+
+				handlerData.path(String.format("%s%s", prefix, path));
+				handlerData.order(order);
+				handlerData.httpMethod(annotation.getClass().getSimpleName().toUpperCase());
+
+				return handlerData;
+			} catch (Exception e) {
+
+				log.warn("Ignoring handler class {} method {} - {}", handlerSource.clazz().getName(), handlerSource.method().getName(), e);
+			}
+			return null;
+		}).collect(Collectors.toList());
 	}
 
 	private static List<Class<? extends Annotation>> getHandlersPresents(Method method) {
 
 		return Arrays.asList(Handler.class, FailureHandler.class, BlockingHandler.class).stream().filter(method::isAnnotationPresent)
 				.collect(Collectors.toList());
+	}
+
+	private static List<Class<? extends Annotation>> getHttpMethodsPresents(Class<?> clazz) {
+
+		return Arrays.asList(Connect.class, Delete.class, Get.class, Head.class, Options.class, Other.class, Path.class, Post.class,
+				Put.class, Trace.class).stream().filter(clazz::isAnnotationPresent).collect(Collectors.toList());
+ 	}
+	
+	private static List<Class<? extends Annotation>> getHttpMethodsPresents(Method method) {
+
+		return Arrays.asList(Connect.class, Delete.class, Get.class, Head.class, Options.class, Other.class, Path.class, Post.class,
+				Put.class, Trace.class).stream().filter(method::isAnnotationPresent).collect(Collectors.toList());
 
 	}
 
-	private static boolean hasMethodsPresents(Class<?> clazz) {
+	private static boolean hasHttpMethodsPresents(Method method) {
 
-		return getMethodsPresents(clazz).stream().filter(clazz::isAnnotationPresent).count() >= 1;
+		return getHttpMethodsPresents(method).stream().filter(method::isAnnotationPresent).count() >= 1;
 	}
 
+
+	private static boolean isHandler(Method method) {
+
+		return getHandlersPresents(method).stream().filter(method::isAnnotationPresent).count() >= 1;
+	}
 }
