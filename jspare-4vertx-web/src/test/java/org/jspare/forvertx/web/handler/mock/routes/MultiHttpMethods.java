@@ -16,29 +16,43 @@
 package org.jspare.forvertx.web.handler.mock.routes;
 
 import org.jspare.forvertx.web.handling.Handling;
-import org.jspare.forvertx.web.mapping.content.Consumes;
-import org.jspare.forvertx.web.mapping.content.Produces;
-import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
 import org.jspare.forvertx.web.mapping.handlers.Handler;
+import org.jspare.forvertx.web.mapping.method.Connect;
+import org.jspare.forvertx.web.mapping.method.Delete;
 import org.jspare.forvertx.web.mapping.method.Get;
+import org.jspare.forvertx.web.mapping.method.Head;
+import org.jspare.forvertx.web.mapping.method.Options;
+import org.jspare.forvertx.web.mapping.method.Other;
+import org.jspare.forvertx.web.mapping.method.Path;
+import org.jspare.forvertx.web.mapping.method.Post;
+import org.jspare.forvertx.web.mapping.method.Put;
+import org.jspare.forvertx.web.mapping.method.Trace;
 
-public class MultiRoutes extends Handling {
+public class MultiHttpMethods extends Handling {
 
+	@Connect
+	@Delete
+	@Get
+	@Post
+	@Head
+	@Options
+	@Other
+	@Path
+	@Put
+	@Trace
 	@Handler
-	@Get("/multiRoutes/1")
-	public void handler1() {
-
-		response.write("multiRoutes 1\n");
-		routingContext.next();
-	}
-
-	@Consumes("*/*")
-	@Produces("text/plain")
-	@BlockingHandler(order = 1)
-	@Get(value = "/multiRoutes/2", regex = true)
-	public void handler2() {
-
-		response.write("multiRoutes 2\n");
-		response.end();
-	}
+	public void handler1() {}
+	
+	@Connect
+	@Delete
+	@Get
+	@Post
+	@Head
+	@Options
+	@Other
+	@Path
+	@Put
+	@Trace
+	@Handler
+	public void handler2() {}
 }

@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
  * @since 09/05/2016
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER })
+@Target({ ElementType.METHOD })
 public @interface Consumes {
 
 	/**

@@ -15,48 +15,48 @@
  */
 package org.jspare.forvertx.web.exceptions;
 
-import org.jspare.core.exception.InfraException;
+import org.jspare.core.exception.InfraRuntimeException;
 
 /**
- * The Class FilterException.
+ * The Class CommandInstantiationException.
  *
  * @author pflima
  * @since 05/10/2015
  */
-public class FilterException extends InfraException {
+public class HandlingInstantiationException extends InfraRuntimeException {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Instantiates a new filter exception.
+	 * Instantiates a new command instantiation exception.
 	 *
 	 * @param message
 	 *            the message
 	 */
-	public FilterException(String message) {
+	public HandlingInstantiationException(String message) {
 		super(message);
 	}
 
 	/**
-	 * Instantiates a new filter exception.
+	 * Instantiates a new command instantiation exception.
 	 *
 	 * @param message
 	 *            the message
 	 * @param cause
 	 *            the cause
 	 */
-	public FilterException(String message, Throwable cause) {
+	public HandlingInstantiationException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
 	/**
-	 * Instantiates a new filter exception.
+	 * Instantiates a new command instantiation exception.
 	 *
-	 * @param cause
-	 *            the cause
+	 * @param e
+	 *            the e
 	 */
-	public FilterException(Throwable cause) {
-		super(cause);
+	public HandlingInstantiationException(Throwable e) {
+		super(e);
 	}
 }

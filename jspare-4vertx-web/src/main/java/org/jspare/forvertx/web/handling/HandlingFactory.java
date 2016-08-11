@@ -13,44 +13,22 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.transaction.model;
+package org.jspare.forvertx.web.handling;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import org.jspare.core.container.Component;
 
 /**
- * The Class Yield.
- *
- * @author pflima
- * @since 10/05/2016
+ * A factory for creating Controller objects.
  */
-@Data
-@AllArgsConstructor
-public class Yield {
-
-	/** The tid. */
-	private String tid;
-
-	/** The bind. */
-	private String bind;
-
-	/** The context. */
-	private Map<String, Object> context;
+@Component
+public interface HandlingFactory {
 
 	/**
-	 * Gets the context.
+	 * Instantiate.
 	 *
-	 * @return the context
+	 * @param cmdClazz
+	 *            the cmd clazz
+	 * @return the object
 	 */
-	public Map<String, Object> getContext() {
-
-		if (context == null) {
-
-			context = new HashMap<>();
-		}
-		return context;
-	}
+	Object instantiate(Class<?> cmdClazz);
 }

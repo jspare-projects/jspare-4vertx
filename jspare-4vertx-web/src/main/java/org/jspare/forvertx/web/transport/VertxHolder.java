@@ -13,14 +13,6 @@ import org.jspare.forvertx.web.exceptions.UnavailableTransportException;
 public interface VertxHolder {
 	
 	/**
-	 * Registry.
-	 *
-	 * @param deploymentId the deployment id
-	 * @param httpServer the http server
-	 */
-	void registry(VertxTransporter vertxTransport) throws UnavailableTransportException;
-	
-	/**
 	 * Gets the.
 	 *
 	 * @param deploymentId the deployment id
@@ -29,14 +21,22 @@ public interface VertxHolder {
 	VertxTransporter get(String deploymentId);
 	
 	/**
+	 * Registry.
+	 *
+	 * @param deploymentId the deployment id
+	 * @param httpServer the http server
+	 */
+	void registry(VertxTransporter vertxTransport) throws UnavailableTransportException;
+	
+	/**
+	 * Release all server allocated on {@link VertxHolder}.
+	 */
+	void release();
+
+	/**
 	 * Release.
 	 *
 	 * @param deploymentId the deployment id
 	 */
 	void release(String deploymentId);
-
-	/**
-	 * Release all server allocated on {@link VertxHolder}.
-	 */
-	void release();
 }

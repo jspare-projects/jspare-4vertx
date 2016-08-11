@@ -15,11 +15,21 @@
  */
 package org.jspare.forvertx.web.transport;
 
+import static org.jspare.core.container.Environment.CONFIG;
 import static org.jspare.core.container.Environment.my;
 import static org.jspare.core.scanner.ComponentScanner.ALL_SCAN_QUOTE;
-import static org.jspare.forvertx.web.commons.ApplicationDefinitions.ROUTES_PACKAGE;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.ROUTES_PACKAGE;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SERVER_PORT_DEFAULT;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SERVER_PORT_KEY;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_ENABLE;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_KEY;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_PASSWORD;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_PASSWORD_KEY;
+import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_PATH;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +44,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.JksOptions;
 import io.vertx.ext.web.Router;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -44,23 +55,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VertxBuilder {
 
-	public static VertxBuilder create() {
-
-		return new VertxBuilder();
-	}
-
-	public static VertxBuilder create(Object source) {
-
-		return new VertxBuilder().source(source);
-	}
-
 	private String name;
 
 	private VertxOptions vertxOptions;
 
 	private HttpServerOptions httpServerOptions;
 
-	private Set<Class<?>> routeSet;
+	private List<Class<?>> routeSet;
 
 	private Set<Middleware> afterMiddlewareSet;
 
@@ -81,10 +82,20 @@ public class VertxBuilder {
 	private VertxBuilder() {
 
 		vertxOptions = new VertxOptions();
-		httpServerOptions = new HttpServerOptions();
-		routeSet = new HashSet<>();
+		httpServerOptions = new HttpServerOptions().setTcpKeepAlive(true).setReuseAddress(true);
+		routeSet = new ArrayList<>();
 		afterMiddlewareSet = new HashSet<>();
 		beforeMiddlewareSet = new HashSet<>();
+	}
+
+	public static VertxBuilder create() {
+
+		return new VertxBuilder();
+	}
+
+	public static VertxBuilder create(Object source) {
+
+		return new VertxBuilder().source(source);
 	}
 
 	public VertxBuilder addAfterMiddleware(Middleware middleware) {
@@ -111,6 +122,14 @@ public class VertxBuilder {
 
 		if (port == 0) {
 
+			port = Integer.valueOf(CONFIG.get(SERVER_PORT_KEY, SERVER_PORT_DEFAULT));
+		}
+		if(!httpServerOptions.isSsl() && Boolean.valueOf(CONFIG.get(SSL_ENABLE, Boolean.FALSE))){
+			
+			httpServerOptions.setSsl(true).setKeyStoreOptions(
+					   new JksOptions()
+					   	.setPath(CONFIG.get(SSL_KEYSTORE_KEY, SSL_KEYSTORE_PATH))
+					   	.setPassword(CONFIG.get(SSL_KEYSTORE_PASSWORD_KEY, SSL_KEYSTORE_PASSWORD)));
 		}
 
 		return new VertxTransporter(name(), vertx(), httpServer(), router());
@@ -121,44 +140,6 @@ public class VertxBuilder {
 		if (StringUtils.isEmpty(name))
 			this.name = UUID.randomUUID().toString();
 		return name;
-	}
-
-	private Set<HandlerData> collectConventionHandlers() {
-
-		Set<HandlerData> handlers = new HashSet<>();
-		String cpackage = source.getClass().getPackage().getName().concat(ROUTES_PACKAGE).concat(ALL_SCAN_QUOTE);
-		my(ComponentScanner.class).scanAndExecute(cpackage, (clazzName) -> {
-
-			try {
-
-				Class<?> clazz = Class.forName((String) clazzName[0]);
-				handlers.addAll(HandlerCollector.collect(clazz, beforeMiddlewareSet, afterMiddlewareSet));
-			} catch (Exception e) {
-
-				log.warn("Cannot collect route class [{}]", clazzName[0], e);
-			}
-			return Void.TYPE;
-		});
-
-		return handlers;
-	}
-
-	private Set<HandlerData> collectHandlers() {
-
-		Set<HandlerData> handlers = new HashSet<>();
-		handlers.addAll(collectRouteSetHandlers());
-		if (conventions && source != null) {
-
-			handlers.addAll(collectConventionHandlers());
-		}
-		return handlers;
-	}
-
-	private Set<HandlerData> collectRouteSetHandlers() {
-
-		Set<HandlerData> handlers = new HashSet<>();
-		routeSet.forEach(clazz -> handlers.addAll(HandlerCollector.collect(clazz, beforeMiddlewareSet, afterMiddlewareSet)));
-		return handlers;
 	}
 
 	protected HttpServer httpServer() {
@@ -180,5 +161,43 @@ public class VertxBuilder {
 		if (vertx == null)
 			vertx = Vertx.vertx(vertxOptions);
 		return vertx;
+	}
+
+	private List<HandlerData> collectConventionHandlers() {
+
+		List<HandlerData> handlers = new ArrayList<>();
+		String cpackage = source.getClass().getPackage().getName().concat(ROUTES_PACKAGE).concat(ALL_SCAN_QUOTE);
+		my(ComponentScanner.class).scanAndExecute(cpackage, (clazzName) -> {
+
+			try {
+
+				Class<?> clazz = Class.forName((String) clazzName[0]);
+				handlers.addAll(HandlerCollector.collect(clazz, beforeMiddlewareSet, afterMiddlewareSet));
+			} catch (Exception e) {
+
+				log.warn("Cannot collect route class [{}]", clazzName[0], e);
+			}
+			return Void.TYPE;
+		});
+
+		return handlers;
+	}
+
+	private List<HandlerData> collectHandlers() {
+
+		List<HandlerData> handlers = new ArrayList<>();
+		handlers.addAll(collectRouteSetHandlers());
+		if (conventions && source != null) {
+
+			handlers.addAll(collectConventionHandlers());
+		}
+		return handlers;
+	}
+
+	private Set<HandlerData> collectRouteSetHandlers() {
+
+		Set<HandlerData> handlers = new HashSet<>();
+		routeSet.forEach(clazz -> handlers.addAll(HandlerCollector.collect(clazz, beforeMiddlewareSet, afterMiddlewareSet)));
+		return handlers;
 	}
 }

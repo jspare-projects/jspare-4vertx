@@ -13,27 +13,18 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.mapping.content;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package org.jspare.forvertx.web.handling;
 
 /**
- * The Interface Parameter.
+ * The Enum Scope.
  *
  * @author pflima
- * @since 09/05/2016
+ * @since 30/03/2016
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
-public @interface Produces {
+public enum HoldType {
 
-	/**
-	 * Value.
-	 *
-	 * @return the string
-	 */
-	String value();
+	/** The application. */
+	APPLICATION,
+	/** The request. */
+	REQUEST;
 }

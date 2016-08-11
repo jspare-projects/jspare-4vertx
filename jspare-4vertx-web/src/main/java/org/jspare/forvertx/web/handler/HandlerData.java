@@ -18,6 +18,7 @@ package org.jspare.forvertx.web.handler;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.jspare.forvertx.web.middleware.Middleware;
 
 import lombok.AllArgsConstructor;
@@ -35,7 +36,7 @@ public class HandlerData implements Cloneable {
 
 	private Class<?> clazz;
 	private Method method;
-	private String path;
+	private String patch = StringUtils.EMPTY;
 	private int order;
 	private boolean pathRegex;
 	private String httpMethod;
@@ -44,7 +45,16 @@ public class HandlerData implements Cloneable {
 	private HandlerType handlerType;
 	private Set<Middleware> before;
 	private Set<Middleware> after;
-
+	
+	public String toStringLine() {
+		StringBuilder line = new StringBuilder();
+		line.append(String.format("[%s.%s]", clazz().getSimpleName(), method().getName()));
+		if(StringUtils.isNotEmpty(httpMethod())) line.append(String.format("[%s] ", httpMethod()));
+		if(StringUtils.isNotEmpty(patch())) line.append(String.format("[%s] ", patch()));
+		else line.append(String.format("[%s] ", clazz().getSimpleName())).append(String.format("[%s] ", method().getName()));
+		return line.toString();
+	}
+	
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 

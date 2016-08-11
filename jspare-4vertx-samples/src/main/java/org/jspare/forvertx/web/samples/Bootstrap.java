@@ -43,8 +43,7 @@ public class Bootstrap extends Application {
 		// now load and determine the behavior of your APPLICATION.
 		
 		VertxTransporter transporter = manager.create(VertxBuilder.create(this));
-		transporter.router();
-		transporter.httpServer().listen();
+		transporter.httpServer().listen(8080);
 	}
 	
 	@Override

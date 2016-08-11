@@ -26,7 +26,7 @@ import org.apache.commons.lang.StringUtils;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Connect {
 
-	String value() default StringUtils.EMPTY;
-
 	boolean regex() default false;
+
+	String value() default StringUtils.EMPTY;
 }

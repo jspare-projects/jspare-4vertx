@@ -10,6 +10,12 @@ public class VertxHolderImpl implements VertxHolder {
 	private final ConcurrentMap<String, VertxTransporter> transports = new ConcurrentHashMap<>();
 
 	@Override
+	public VertxTransporter get(String deploymentId) {
+
+		return this.transports.get(deploymentId);
+	}
+
+	@Override
 	public void registry(VertxTransporter vertxTransport) {
 		
 		
@@ -17,9 +23,10 @@ public class VertxHolderImpl implements VertxHolder {
 	}
 
 	@Override
-	public VertxTransporter get(String deploymentId) {
+	public void release() {
 
-		return this.transports.get(deploymentId);
+		this.transports.values().stream().map(VertxTransporter::httpServer).forEach(HttpServer::close);
+		this.transports.clear();
 	}
 
 	@Override
@@ -30,12 +37,5 @@ public class VertxHolderImpl implements VertxHolder {
 			
 			transport.httpServer().close();
 		}
-	}
-
-	@Override
-	public void release() {
-
-		this.transports.values().stream().map(VertxTransporter::httpServer).forEach(HttpServer::close);
-		this.transports.clear();
 	}
 }

@@ -19,10 +19,8 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 public class VertxTransporter extends AbstractVerticle {
 
 	@Getter
@@ -35,17 +33,26 @@ public class VertxTransporter extends AbstractVerticle {
 
 	private final Router router;
 
+	public VertxTransporter(String deploymentId, Vertx vertx, HttpServer httpServer, Router router) {
+		this.deploymentId = deploymentId;
+		this.vertx = vertx;
+		this.httpServer = httpServer;
+		this.router = router;
+		this.vertx.deployVerticle(this);
+		this.httpServer.requestHandler(router::accept);
+	}
+
 	public HttpServer httpServer() {
 
 		return this.httpServer;
 	}
 
-	public Router router() {
-		return this.router;
-	}
-
 	public VertxTransporter remap() {
 
 		return this;
+	}
+
+	public Router router() {
+		return this.router;
 	}
 }

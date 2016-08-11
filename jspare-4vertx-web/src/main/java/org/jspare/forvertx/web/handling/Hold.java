@@ -13,32 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.transaction;
+package org.jspare.forvertx.web.handling;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The Enum TransactionStatus.
+ * The Interface Scope.
  *
  * @author pflima
- * @since 30/03/2016
+ * @since 22/04/2016
  */
-public enum TransactionStatus {
-
-	/** The progress. */
-	PROGRESS,
-	/** The yield. */
-	YIELD,
-	/** The done. */
-	DONE;
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.FIELD })
+public @interface Hold {
 
 	/**
-	 * Checks if is.
+	 * Value.
 	 *
-	 * @param status
-	 *            the status
-	 * @return true, if successful
+	 * @return the scope type
 	 */
-	public boolean is(TransactionStatus status) {
-
-		return status.equals(this);
-	}
+	HoldType value();
 }

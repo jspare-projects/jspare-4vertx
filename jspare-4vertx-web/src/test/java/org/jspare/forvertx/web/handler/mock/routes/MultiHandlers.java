@@ -13,32 +13,19 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.transaction;
+package org.jspare.forvertx.web.handler.mock.routes;
 
-import org.jspare.core.container.Component;
+import org.jspare.forvertx.web.handling.Handling;
+import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
+import org.jspare.forvertx.web.mapping.handlers.FailureHandler;
+import org.jspare.forvertx.web.mapping.handlers.Handler;
 
-/**
- * The Interface TidGenerator.
- *
- * @author pflima
- * @since 30/03/2016
- */
-@Component
-public interface TidGenerator {
+public class MultiHandlers extends Handling {
 
-	/**
-	 * Generate.
-	 *
-	 * @return the string
-	 */
-	String generate();
-
-	/**
-	 * Validate.
-	 *
-	 * @param tid
-	 *            the tid
-	 * @return true, if successful
-	 */
-	boolean validate(String tid);
+	@Handler
+	@BlockingHandler
+	public void handler1() {}
+	
+	@FailureHandler
+	public void handler2() {}
 }

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.handler;
+package org.jspare.forvertx.web.handling;
 
 import static org.jspare.core.container.Environment.my;
 

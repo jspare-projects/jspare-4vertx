@@ -15,7 +15,7 @@
  */
 package org.jspare.forvertx.web.handler.mock.routes;
 
-import org.jspare.forvertx.web.handler.Handling;
+import org.jspare.forvertx.web.handling.Handling;
 import org.jspare.forvertx.web.mapping.handlers.Handler;
 import org.jspare.forvertx.web.mapping.method.Get;
 
