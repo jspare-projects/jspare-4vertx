@@ -63,15 +63,12 @@ public class DefaultHandler implements Handler<RoutingContext> {
 				parameters[i] = resolveParameter(parameter, routingContext);
 				i++;
 			}
-
+			
+			routingContext.addBodyEndHandler((event) -> {
+			
+				handlerData.after().forEach(middleware -> middleware.doIt(routingContext));
+			});
 			handlerData.method().invoke(newInstance, parameters);
-
-			handlerData.after().forEach(middleware -> middleware.doIt(routingContext));
-
-			if (!routingContext.response().ended()) {
-
-				routingContext.response().end();
-			}
 
 		} catch (Throwable t) {
 

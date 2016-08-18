@@ -68,6 +68,7 @@ public abstract class Handling {
 		contentType("application/json");
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -81,6 +82,12 @@ public abstract class Handling {
 		status(HttpResponseStatus.BAD_REQUEST);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
+	}
+
+	protected String body() {
+
+		return routingContext.getBodyAsString();
 	}
 
 	/**
@@ -89,6 +96,7 @@ public abstract class Handling {
 	public void conflict() {
 
 		status(HttpResponseStatus.CONFLICT);
+		end();
 	}
 
 	/**
@@ -104,7 +112,7 @@ public abstract class Handling {
 		contentType("application/json");
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
-
+		end();
 	}
 
 	/**
@@ -118,11 +126,20 @@ public abstract class Handling {
 		status(HttpResponseStatus.BAD_REQUEST);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	public HttpServerResponse contentType(String contentType) {
 		response.putHeader("content-type", contentType);
 		return response;
+	}
+
+	public void end(){
+		
+		if(!response.ended()){
+			
+			response.end();
+		}
 	}
 
 	/**
@@ -131,6 +148,7 @@ public abstract class Handling {
 	public void error() {
 
 		status(HttpResponseStatus.BAD_REQUEST);
+		end();
 	}
 
 	/**
@@ -145,6 +163,7 @@ public abstract class Handling {
 		contentType("application/json");
 		response.setChunked(true);
 		response.write(e.getMessage());
+		end();
 	}
 
 	/**
@@ -158,6 +177,7 @@ public abstract class Handling {
 		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -166,6 +186,7 @@ public abstract class Handling {
 	public void forbidden() {
 
 		status(HttpResponseStatus.FORBIDDEN);
+		end();
 	}
 
 	/**
@@ -181,6 +202,7 @@ public abstract class Handling {
 		contentType("application/json");
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -194,6 +216,7 @@ public abstract class Handling {
 		status(HttpResponseStatus.BAD_REQUEST);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	public Optional<String> getHeader(String name) {
@@ -212,6 +235,7 @@ public abstract class Handling {
 	public void noContent() {
 
 		status(HttpResponseStatus.NO_CONTENT);
+		end();
 	}
 
 	/**
@@ -220,6 +244,7 @@ public abstract class Handling {
 	public void notAcceptable() {
 
 		status(HttpResponseStatus.NOT_ACCEPTABLE);
+		end();
 	}
 
 	/**
@@ -228,6 +253,7 @@ public abstract class Handling {
 	public void notFound() {
 
 		status(HttpResponseStatus.NOT_FOUND);
+		end();
 	}
 
 	/**
@@ -236,6 +262,7 @@ public abstract class Handling {
 	public void notImplemented() {
 
 		status(HttpResponseStatus.NOT_IMPLEMENTED);
+		end();
 	}
 
 	/**
@@ -244,6 +271,7 @@ public abstract class Handling {
 	public void preConditionFailed() {
 
 		status(HttpResponseStatus.PRECONDITION_FAILED);
+		end();
 	}
 
 	/**
@@ -259,6 +287,7 @@ public abstract class Handling {
 		contentType("application/json");
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -272,6 +301,7 @@ public abstract class Handling {
 		status(HttpResponseStatus.PRECONDITION_FAILED);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	public HttpServerResponse status(HttpResponseStatus status) {
@@ -286,6 +316,7 @@ public abstract class Handling {
 	public void success() {
 
 		status(HttpResponseStatus.OK);
+		end();
 	}
 
 	/**
@@ -301,6 +332,7 @@ public abstract class Handling {
 		contentType("application/json");
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -317,6 +349,7 @@ public abstract class Handling {
 
 		response.setChunked(true);
 		status(HttpResponseStatus.OK).write(content);
+		end();
 	}
 
 	/**
@@ -325,6 +358,7 @@ public abstract class Handling {
 	public void unauthorized() {
 
 		status(HttpResponseStatus.UNAUTHORIZED);
+		end();
 	}
 
 	/**
@@ -340,6 +374,7 @@ public abstract class Handling {
 		status(HttpResponseStatus.UNAUTHORIZED);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -353,18 +388,15 @@ public abstract class Handling {
 		status(HttpResponseStatus.UNAUTHORIZED);
 		response.setChunked(true);
 		response.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
-
+	
 	/**
 	 * Unvailable.
 	 */
 	public void unvailable() {
 
 		status(HttpResponseStatus.SERVICE_UNAVAILABLE);
-	}
-
-	protected String body() {
-
-		return routingContext.getBodyAsString();
+		end();
 	}
 }
