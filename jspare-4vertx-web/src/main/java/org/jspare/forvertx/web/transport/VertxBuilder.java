@@ -27,6 +27,7 @@ import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_PAS
 import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_PASSWORD_KEY;
 import static org.jspare.forvertx.web.commons.Definitions4Vertx.SSL_KEYSTORE_PATH;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,32 +35,45 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.jspare.core.loader.ResourceLoader;
 import org.jspare.core.scanner.ComponentScanner;
+import org.jspare.forvertx.web.commons.Definitions4Vertx;
 import org.jspare.forvertx.web.handler.HandlerCollector;
 import org.jspare.forvertx.web.handler.HandlerData;
 import org.jspare.forvertx.web.handler.HandlerWrapper;
 import org.jspare.forvertx.web.middleware.Middleware;
 
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.VertxOptionsConverter;
+import io.vertx.core.http.HttpServerOptionsConverter;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.JksOptions;
-import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
 @Data
-@Accessors(fluent = true)
 @Slf4j
-public class VertxBuilder {
+@Accessors(fluent = true)
+@EqualsAndHashCode(callSuper = false)
+public class VertxBuilder extends AbstractVertxBuilder {
+
+	private static final String DEFAULT_VERTX_OPTIONS_JSON_PATH = "vertxOptions.json";
+
+	public static VertxBuilder create() {
+
+		return new VertxBuilder();
+	}
+
+	public static VertxBuilder create(Object source) {
+
+		return new VertxBuilder().source(source);
+	}
 
 	private String name;
-
-	private VertxOptions vertxOptions;
-
-	private HttpServerOptions httpServerOptions;
 
 	private List<Class<?>> routeSet;
 
@@ -71,31 +85,16 @@ public class VertxBuilder {
 
 	private int port;
 
-	private Vertx vertx;
-
-	private HttpServer httpServer;
-
-	private Router router;
+	private int bodySizeLimit = Definitions4Vertx.SERVER_DEFAULT_BODY_SIZE;
 
 	private Object source;
 
 	private VertxBuilder() {
 
-		vertxOptions = new VertxOptions();
-		httpServerOptions = new HttpServerOptions().setTcpKeepAlive(true).setReuseAddress(true);
+		super();
 		routeSet = new ArrayList<>();
 		afterMiddlewareSet = new HashSet<>();
 		beforeMiddlewareSet = new HashSet<>();
-	}
-
-	public static VertxBuilder create() {
-
-		return new VertxBuilder();
-	}
-
-	public static VertxBuilder create(Object source) {
-
-		return new VertxBuilder().source(source);
 	}
 
 	public VertxBuilder addAfterMiddleware(Middleware middleware) {
@@ -118,21 +117,53 @@ public class VertxBuilder {
 
 	public VertxTransporter build() {
 
+		router().route().handler(BodyHandler.create().setBodyLimit(bodySizeLimit));
+
 		collectHandlers().forEach(hd -> HandlerWrapper.prepareHandler(router(), hd));
 
 		if (port == 0) {
 
 			port = Integer.valueOf(CONFIG.get(SERVER_PORT_KEY, SERVER_PORT_DEFAULT));
 		}
-		if(!httpServerOptions.isSsl() && Boolean.valueOf(CONFIG.get(SSL_ENABLE, Boolean.FALSE))){
-			
-			httpServerOptions.setSsl(true).setKeyStoreOptions(
-					   new JksOptions()
-					   	.setPath(CONFIG.get(SSL_KEYSTORE_KEY, SSL_KEYSTORE_PATH))
-					   	.setPassword(CONFIG.get(SSL_KEYSTORE_PASSWORD_KEY, SSL_KEYSTORE_PASSWORD)));
+		if (!httpServerOptions.isSsl() && Boolean.valueOf(CONFIG.get(SSL_ENABLE, Boolean.FALSE))) {
+
+			httpServerOptions.setSsl(true).setKeyStoreOptions(new JksOptions().setPath(CONFIG.get(SSL_KEYSTORE_KEY, SSL_KEYSTORE_PATH))
+					.setPassword(CONFIG.get(SSL_KEYSTORE_PASSWORD_KEY, SSL_KEYSTORE_PASSWORD)));
 		}
 
 		return new VertxTransporter(name(), vertx(), httpServer(), router());
+	}
+
+	public VertxBuilder loadHttpServerOptions() {
+
+		loadVertxOptions(DEFAULT_VERTX_OPTIONS_JSON_PATH);
+		return this;
+	}
+
+	@SneakyThrows(IOException.class)
+	public VertxBuilder loadHttpServerOptions(String path) {
+		String content = my(ResourceLoader.class).readFileToString(path);
+		if (StringUtils.isNotEmpty(content)) {
+
+			HttpServerOptionsConverter.fromJson(Json.decodeValue(content, JsonObject.class), httpServerOptions);
+		}
+		return this;
+	}
+
+	public VertxBuilder loadVertxOptions() {
+
+		loadVertxOptions(DEFAULT_VERTX_OPTIONS_JSON_PATH);
+		return this;
+	}
+
+	@SneakyThrows(IOException.class)
+	public VertxBuilder loadVertxOptions(String path) {
+		String content = my(ResourceLoader.class).readFileToString(path);
+		if (StringUtils.isNotEmpty(content)) {
+
+			VertxOptionsConverter.fromJson(Json.decodeValue(content, JsonObject.class), vertxOptions);
+		}
+		return this;
 	}
 
 	public String name() {
@@ -140,27 +171,6 @@ public class VertxBuilder {
 		if (StringUtils.isEmpty(name))
 			this.name = UUID.randomUUID().toString();
 		return name;
-	}
-
-	protected HttpServer httpServer() {
-
-		if (httpServer == null)
-			httpServer = vertx().createHttpServer(httpServerOptions);
-		return httpServer;
-	}
-
-	protected Router router() {
-
-		if (router == null)
-			router = Router.router(vertx());
-		return router;
-	}
-
-	protected Vertx vertx() {
-
-		if (vertx == null)
-			vertx = Vertx.vertx(vertxOptions);
-		return vertx;
 	}
 
 	private List<HandlerData> collectConventionHandlers() {

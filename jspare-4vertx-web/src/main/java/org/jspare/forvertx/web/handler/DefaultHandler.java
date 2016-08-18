@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 JSpare.org.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.jspare.forvertx.web.handler;
 
 import static org.jspare.core.container.Environment.my;
@@ -53,8 +68,8 @@ public class DefaultHandler implements Handler<RoutingContext> {
 
 			handlerData.after().forEach(middleware -> middleware.doIt(routingContext));
 
-			if(!routingContext.response().ended()){
-				
+			if (!routingContext.response().ended()) {
+
 				routingContext.response().end();
 			}
 
@@ -94,8 +109,11 @@ public class DefaultHandler implements Handler<RoutingContext> {
 				|| parameter.isAnnotationPresent(Model.class)) {
 
 			try {
+				if (routingContext.getBody() == null) {
 
-				return my(Json.class).fromJSON(routingContext.getBodyAsString(), parameter.getType());
+					return null;
+				}
+				return my(Json.class).fromJSON(routingContext.getBody().toString(), parameter.getType());
 			} catch (SerializationException e) {
 
 				log.warn("Invalid content of body for class [{}] on parameter [{}]", parameter.getClass(), parameter.getName());

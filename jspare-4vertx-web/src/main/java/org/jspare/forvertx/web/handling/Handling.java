@@ -44,7 +44,7 @@ public abstract class Handling {
 	 */
 	public void badGateway() {
 
-		status(HttpResponseStatus.BAD_GATEWAY).end();
+		status(HttpResponseStatus.BAD_GATEWAY);
 	}
 
 	/**
@@ -52,7 +52,7 @@ public abstract class Handling {
 	 */
 	public void badRequest() {
 
-		status(HttpResponseStatus.BAD_REQUEST).end();
+		status(HttpResponseStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -66,7 +66,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.BAD_REQUEST);
 		contentType("application/json");
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -78,7 +79,8 @@ public abstract class Handling {
 	public void badRequest(String content) {
 
 		status(HttpResponseStatus.BAD_REQUEST);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -86,7 +88,7 @@ public abstract class Handling {
 	 */
 	public void conflict() {
 
-		status(HttpResponseStatus.CONFLICT).end();
+		status(HttpResponseStatus.CONFLICT);
 	}
 
 	/**
@@ -100,7 +102,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.CONFLICT);
 		contentType("application/json");
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 
 	}
 
@@ -113,7 +116,8 @@ public abstract class Handling {
 	public void conflict(String content) {
 
 		status(HttpResponseStatus.BAD_REQUEST);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	public HttpServerResponse contentType(String contentType) {
@@ -126,7 +130,7 @@ public abstract class Handling {
 	 */
 	public void error() {
 
-		status(HttpResponseStatus.BAD_REQUEST).end();
+		status(HttpResponseStatus.BAD_REQUEST);
 	}
 
 	/**
@@ -139,7 +143,8 @@ public abstract class Handling {
 
 		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		contentType("application/json");
-		response.write(e.getMessage()).end();
+		response.setChunked(true);
+		response.write(e.getMessage());
 	}
 
 	/**
@@ -151,7 +156,8 @@ public abstract class Handling {
 	public void error(String content) {
 
 		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -159,7 +165,7 @@ public abstract class Handling {
 	 */
 	public void forbidden() {
 
-		status(HttpResponseStatus.FORBIDDEN).end();
+		status(HttpResponseStatus.FORBIDDEN);
 	}
 
 	/**
@@ -173,7 +179,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.FORBIDDEN);
 		contentType("application/json");
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -185,7 +192,8 @@ public abstract class Handling {
 	public void forbidden(String content) {
 
 		status(HttpResponseStatus.BAD_REQUEST);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	public Optional<String> getHeader(String name) {
@@ -203,7 +211,7 @@ public abstract class Handling {
 	 */
 	public void noContent() {
 
-		status(HttpResponseStatus.NO_CONTENT).end();
+		status(HttpResponseStatus.NO_CONTENT);
 	}
 
 	/**
@@ -211,7 +219,7 @@ public abstract class Handling {
 	 */
 	public void notAcceptable() {
 
-		status(HttpResponseStatus.NOT_ACCEPTABLE).end();
+		status(HttpResponseStatus.NOT_ACCEPTABLE);
 	}
 
 	/**
@@ -219,7 +227,7 @@ public abstract class Handling {
 	 */
 	public void notFound() {
 
-		status(HttpResponseStatus.NOT_FOUND).end();
+		status(HttpResponseStatus.NOT_FOUND);
 	}
 
 	/**
@@ -227,7 +235,7 @@ public abstract class Handling {
 	 */
 	public void notImplemented() {
 
-		status(HttpResponseStatus.NOT_IMPLEMENTED).end();
+		status(HttpResponseStatus.NOT_IMPLEMENTED);
 	}
 
 	/**
@@ -235,7 +243,7 @@ public abstract class Handling {
 	 */
 	public void preConditionFailed() {
 
-		status(HttpResponseStatus.PRECONDITION_FAILED).end();
+		status(HttpResponseStatus.PRECONDITION_FAILED);
 	}
 
 	/**
@@ -249,7 +257,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.PRECONDITION_FAILED);
 		contentType("application/json");
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -261,7 +270,8 @@ public abstract class Handling {
 	public void preConditionFailed(String content) {
 
 		status(HttpResponseStatus.PRECONDITION_FAILED);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	public HttpServerResponse status(HttpResponseStatus status) {
@@ -275,7 +285,7 @@ public abstract class Handling {
 	 */
 	public void success() {
 
-		status(HttpResponseStatus.OK).end();
+		status(HttpResponseStatus.OK);
 	}
 
 	/**
@@ -289,7 +299,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.OK);
 		contentType("application/json");
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -304,7 +315,8 @@ public abstract class Handling {
 			contentType("application/json");
 		}
 
-		status(HttpResponseStatus.OK).end();
+		response.setChunked(true);
+		status(HttpResponseStatus.OK).write(content);
 	}
 
 	/**
@@ -312,7 +324,7 @@ public abstract class Handling {
 	 */
 	public void unauthorized() {
 
-		status(HttpResponseStatus.UNAUTHORIZED).end();
+		status(HttpResponseStatus.UNAUTHORIZED);
 	}
 
 	/**
@@ -326,7 +338,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		contentType("application/json");
 		status(HttpResponseStatus.UNAUTHORIZED);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -338,7 +351,8 @@ public abstract class Handling {
 	public void unauthorized(String content) {
 
 		status(HttpResponseStatus.UNAUTHORIZED);
-		response.write(content, StandardCharsets.UTF_8.name()).end();
+		response.setChunked(true);
+		response.write(content, StandardCharsets.UTF_8.name());
 	}
 
 	/**
@@ -346,7 +360,7 @@ public abstract class Handling {
 	 */
 	public void unvailable() {
 
-		status(HttpResponseStatus.SERVICE_UNAVAILABLE).end();
+		status(HttpResponseStatus.SERVICE_UNAVAILABLE);
 	}
 
 	protected String body() {

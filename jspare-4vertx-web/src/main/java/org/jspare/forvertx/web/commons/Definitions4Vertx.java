@@ -33,9 +33,10 @@ import org.jspare.forvertx.web.mapping.method.Put;
 import org.jspare.forvertx.web.mapping.method.Trace;
 
 public interface Definitions4Vertx extends Definitions {
-	
-	Class<?>[] HTTP_METHODS_TYPES = new Class<?>[] { Connect.class, Delete.class, Get.class, Head.class, Options.class, Other.class, Path.class, Post.class,Put.class, Trace.class };
-	
+
+	Class<?>[] HTTP_METHODS_TYPES = new Class<?>[] { Connect.class, Delete.class, Get.class, Head.class, Options.class, Other.class,
+			Path.class, Post.class, Put.class, Trace.class };
+
 	Class<?>[] HANDLERS_TYPES = new Class<?>[] { Handler.class, FailureHandler.class, BlockingHandler.class };
 
 	/** The Constant ROUTES_PACKAGE */
@@ -44,17 +45,10 @@ public interface Definitions4Vertx extends Definitions {
 	/** The Constant SERVER_PORT_KEY. */
 	String SERVER_PORT_KEY = "server.default.port";
 
+	int SERVER_DEFAULT_BODY_SIZE = -1;
+
 	/** The default port. */
 	int SERVER_PORT_DEFAULT = 8080;
-	
-	/** The transaction time to live key. */
-	String TRANSACTION_TIME_TO_LIVE_KEY = "server.transaction.live";
-
-	/** The transaction time to live default. */
-	Long TRANSACTION_TIME_TO_LIVE_DEFAULT = 5l;
-
-	/** The yield enable key. */
-	String YIELD_ENABLE_KEY = "server.yield.enable";
 
 	/** The certificate enable. */
 	String SSL_ENABLE = "ssl.server";
