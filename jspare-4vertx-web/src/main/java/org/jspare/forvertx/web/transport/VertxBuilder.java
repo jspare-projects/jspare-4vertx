@@ -37,7 +37,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.jspare.core.loader.ResourceLoader;
 import org.jspare.core.scanner.ComponentScanner;
-import org.jspare.forvertx.web.commons.Definitions4Vertx;
 import org.jspare.forvertx.web.handler.HandlerCollector;
 import org.jspare.forvertx.web.handler.HandlerData;
 import org.jspare.forvertx.web.handler.HandlerWrapper;
@@ -70,7 +69,7 @@ public class VertxBuilder extends AbstractVertxBuilder {
 
 	public static VertxBuilder create(Object source) {
 
-		return new VertxBuilder().source(source);
+		return new VertxBuilder().source4conventions(source);
 	}
 
 	private String name;
@@ -81,13 +80,9 @@ public class VertxBuilder extends AbstractVertxBuilder {
 
 	private Set<Middleware> beforeMiddlewareSet;
 
-	private boolean conventions = true;
-
 	private int port;
 
-	private int bodySizeLimit = Definitions4Vertx.SERVER_DEFAULT_BODY_SIZE;
-
-	private Object source;
+	private Object source4conventions;
 
 	private VertxBuilder() {
 
@@ -117,7 +112,7 @@ public class VertxBuilder extends AbstractVertxBuilder {
 
 	public VertxTransporter build() {
 
-		router().route().handler(BodyHandler.create().setBodyLimit(bodySizeLimit));
+		router().route().handler(BodyHandler.create("file-uploads"));
 
 		collectHandlers().forEach(hd -> HandlerWrapper.prepareHandler(router(), hd));
 
@@ -125,12 +120,14 @@ public class VertxBuilder extends AbstractVertxBuilder {
 
 			port = Integer.valueOf(CONFIG.get(SERVER_PORT_KEY, SERVER_PORT_DEFAULT));
 		}
+
+		httpServerOptions.setPort(port);
+
 		if (!httpServerOptions.isSsl() && Boolean.valueOf(CONFIG.get(SSL_ENABLE, Boolean.FALSE))) {
 
 			httpServerOptions.setSsl(true).setKeyStoreOptions(new JksOptions().setPath(CONFIG.get(SSL_KEYSTORE_KEY, SSL_KEYSTORE_PATH))
 					.setPassword(CONFIG.get(SSL_KEYSTORE_PASSWORD_KEY, SSL_KEYSTORE_PASSWORD)));
 		}
-
 		return new VertxTransporter(name(), vertx(), httpServer(), router());
 	}
 
@@ -176,7 +173,7 @@ public class VertxBuilder extends AbstractVertxBuilder {
 	private List<HandlerData> collectConventionHandlers() {
 
 		List<HandlerData> handlers = new ArrayList<>();
-		String cpackage = source.getClass().getPackage().getName().concat(ROUTES_PACKAGE).concat(ALL_SCAN_QUOTE);
+		String cpackage = source4conventions.getClass().getPackage().getName().concat(ROUTES_PACKAGE).concat(ALL_SCAN_QUOTE);
 		my(ComponentScanner.class).scanAndExecute(cpackage, (clazzName) -> {
 
 			try {
@@ -197,7 +194,7 @@ public class VertxBuilder extends AbstractVertxBuilder {
 
 		List<HandlerData> handlers = new ArrayList<>();
 		handlers.addAll(collectRouteSetHandlers());
-		if (conventions && source != null) {
+		if (source4conventions != null) {
 
 			handlers.addAll(collectConventionHandlers());
 		}

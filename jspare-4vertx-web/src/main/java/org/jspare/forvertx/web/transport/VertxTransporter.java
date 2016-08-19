@@ -20,7 +20,9 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class VertxTransporter extends AbstractVerticle {
 
 	@Getter
@@ -45,6 +47,11 @@ public class VertxTransporter extends AbstractVerticle {
 	public HttpServer httpServer() {
 
 		return this.httpServer;
+	}
+
+	public void listen() {
+
+		this.httpServer.listen((server) -> log.info("Vert.x httpServer started at: 127.0.0.1:{}", this.httpServer.actualPort()));
 	}
 
 	public VertxTransporter remap() {
