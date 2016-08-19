@@ -31,7 +31,7 @@ public class Bootstrap extends Application {
 	protected void load() {
 
 		VertxTransporter transporter = manager.create(VertxBuilder.create(this));
-		transporter.httpServer().listen(8080);
+		transporter.listen();
 	}
 
 	public static void main(String[] args) throws InfraException {
