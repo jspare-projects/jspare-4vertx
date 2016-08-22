@@ -6,7 +6,7 @@ import org.jspare.forvertx.web.exceptions.UnavailableTransportException;
 @Component
 public interface VertxManager {
 	
-	VertxTransporter create(VertxBuilder vertxBuilder) throws UnavailableTransportException;
+	VertxTransporter create(AbstractVertxBuilder vertxBuilder) throws UnavailableTransportException;
 	
 	VertxTransporter retrieve(String deploymentId);
 }

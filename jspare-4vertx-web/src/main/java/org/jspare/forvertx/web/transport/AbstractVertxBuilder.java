@@ -21,10 +21,10 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
 
-public class AbstractVertxBuilder {
+public abstract class AbstractVertxBuilder {
 
 	private Vertx vertx;
-
+	
 	private HttpServer httpServer;
 
 	private Router router;
@@ -32,20 +32,35 @@ public class AbstractVertxBuilder {
 	protected VertxOptions vertxOptions;
 
 	protected HttpServerOptions httpServerOptions;
-
+	
 	public AbstractVertxBuilder() {
 
 		vertxOptions = new VertxOptions();
 		httpServerOptions = new HttpServerOptions().setTcpKeepAlive(true).setReuseAddress(true);
 	}
-
+	
+	public AbstractVertxBuilder clustered(){
+		
+		vertxOptions.setClustered(true);
+		return this;
+	}
+	
 	protected HttpServer httpServer() {
 
 		if (httpServer == null)
 			httpServer = vertx().createHttpServer(httpServerOptions);
 		return httpServer;
 	}
+	
+	public HttpServerOptions httpServerOptions() {
+		return httpServerOptions;
+	}
 
+	public AbstractVertxBuilder httpServerOptions(HttpServerOptions httpServerOptions) {
+		this.httpServerOptions = httpServerOptions;
+		return this;
+	}
+	
 	protected Router router() {
 
 		if (router == null)
@@ -55,9 +70,21 @@ public class AbstractVertxBuilder {
 
 	protected Vertx vertx() {
 
-		if (vertx == null)
+		if (vertx == null){
+			
 			vertx = Vertx.vertx(vertxOptions);
+		}
 		return vertx;
 	}
 
+	public VertxOptions vertxOptions() {
+		return vertxOptions;
+	}
+
+	public AbstractVertxBuilder vertxOptions(VertxOptions vertxOptions) {
+		this.vertxOptions = vertxOptions;
+		return this;
+	}
+
+	public abstract VertxTransporter build();
 }

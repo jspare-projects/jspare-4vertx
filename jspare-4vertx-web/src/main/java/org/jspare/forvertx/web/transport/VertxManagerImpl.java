@@ -9,7 +9,7 @@ public class VertxManagerImpl implements VertxManager {
 	private VertxHolder holder;
 
 	@Override
-	public VertxTransporter create(VertxBuilder vertxBuilder) throws UnavailableTransportException{
+	public VertxTransporter create(AbstractVertxBuilder vertxBuilder) throws UnavailableTransportException{
 
 		VertxTransporter transport = vertxBuilder.build();
 		holder.registry(transport);

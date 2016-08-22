@@ -15,6 +15,8 @@
  */
 package org.jspare.forvertx.web.transport;
 
+import org.jspare.forvertx.web.exceptions.HttpServerListenException;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -51,7 +53,14 @@ public class VertxTransporter extends AbstractVerticle {
 
 	public void listen() {
 
-		this.httpServer.listen((server) -> log.info("Vert.x httpServer started at: 127.0.0.1:{}", this.httpServer.actualPort()));
+		this.httpServer.listen((server) -> {
+			
+			if(server.failed()){
+				
+				throw new HttpServerListenException(server.cause());
+			}
+			log.info("Vert.x httpServer started at: 127.0.0.1:{}", this.httpServer.actualPort());
+		});
 	}
 
 	public VertxTransporter remap() {
