@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.jspare.forvertx.web.mapping.authentication.Auth;
+import org.jspare.forvertx.web.mapping.authentication.IgnoreAuth;
 import org.jspare.forvertx.web.mapping.content.Consumes;
 import org.jspare.forvertx.web.mapping.content.Produces;
 import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
@@ -49,6 +50,8 @@ public class HandlerCollector {
 
 		List<HandlerData> collectedHandlers = new ArrayList<>();
 		List<Annotation> httpMethodsAnnotations = new ArrayList<>(getHttpMethodsPresents(clazz));
+		boolean hasAuthClass = clazz.isAnnotationPresent(Auth.class);
+		Auth authClass = clazz.getAnnotation(Auth.class);
 
 		for (Method method : clazz.getDeclaredMethods()) {
 
@@ -64,20 +67,27 @@ public class HandlerCollector {
 			String produces = method.isAnnotationPresent(Produces.class) ? method.getAnnotation(Produces.class).value() : StringUtils.EMPTY;
 			Class<? extends Handler<RoutingContext>> routeHandler = transporter.getRouteHandler();
 			List<org.jspare.forvertx.web.handler.BodyEndHandler> bodyEndHandler = collectBodyEndHandlers(transporter, method);
-			boolean hasAuth = false;
+			boolean hasMethodAuth = false;
 			boolean skipAuthorities = false;
 			String autority = StringUtils.EMPTY;
-
-			if (method.isAnnotationPresent(Auth.class)) {
-
-				Auth auth = method.getAnnotation(Auth.class);
-				hasAuth = true;
-				skipAuthorities = auth.skipAuthorities();
-				autority = StringUtils.defaultIfEmpty(auth.value(), StringUtils.EMPTY);
+			
+			if (!method.isAnnotationPresent(IgnoreAuth.class)) {
+				if (method.isAnnotationPresent(Auth.class)) {
+					Auth auth = method.getAnnotation(Auth.class);
+					hasMethodAuth = true;
+					skipAuthorities = auth.skipAuthorities();
+					autority = StringUtils.defaultIfEmpty(auth.value(), StringUtils.EMPTY);
+				} else {
+					if (hasAuthClass) {
+						hasMethodAuth = true;
+						skipAuthorities = authClass.skipAuthorities();
+						autority = StringUtils.defaultIfEmpty(authClass.value(), StringUtils.EMPTY);
+					}
+				}
 			}
 
 			HandlerData defaultHandlerData = new HandlerData().clazz(clazz).method(method).consumes(consumes).produces(produces)
-					.bodyEndHandler(bodyEndHandler).auth(hasAuth).skipAuthorities(skipAuthorities).autority(autority)
+					.bodyEndHandler(bodyEndHandler).auth(hasMethodAuth).skipAuthorities(skipAuthorities).autority(autority)
 					.authProvider(transporter.getAuthProvider()).routeHandler(routeHandler);
 
 			if (hasHttpMethodsPresents(method)) {

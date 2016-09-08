@@ -20,35 +20,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
- * The Annotation Security. <br>
- * It is defined annotation that is the route to be safe and protected for Token
+ * The Annotation Security Exception. <br>
+ * It is a exception defined annotation for methods non authenticated
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE })
-public @interface Auth {
-
-	/**
-	 * Description of this handler authentication.
-	 *
-	 * @return the string
-	 */
-	String description() default StringUtils.EMPTY;
-
-	/**
-	 * The Skip roles attribute allows any user who is authenticated to access
-	 * the handler.
-	 *
-	 * @return true, if selected
-	 */
-	boolean skipAuthorities() default false;
-
-	/**
-	 * Define the authority of route for user authentication.
-	 *
-	 * @return the string
-	 */
-	String value() default StringUtils.EMPTY;
+@Target({ ElementType.METHOD })
+public @interface IgnoreAuth {
+	
 }
