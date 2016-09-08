@@ -13,16 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web;
+package org.jspare.forvertx.web.auth;
 
-import java.util.HashSet;
-import java.util.Set;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.RoutingContext;
 
-public class TestUtils {
+public interface AuthProvider extends io.vertx.ext.auth.AuthProvider {
 
-	public static <T> Set<T> emptySet() {
-
-		return new HashSet<T>();
-	}
-
+	JsonObject provideAuthdata(RoutingContext ctx);
 }

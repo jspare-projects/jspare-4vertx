@@ -21,6 +21,7 @@ import org.jspare.core.container.Component;
  * A factory for creating Controller objects.
  */
 @Component
+@FunctionalInterface
 public interface HandlingFactory {
 
 	/**

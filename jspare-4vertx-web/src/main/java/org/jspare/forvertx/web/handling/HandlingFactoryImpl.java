@@ -58,7 +58,7 @@ public class HandlingFactoryImpl implements HandlingFactory {
 				Constructor<?> constructor = cmdClazz.getConstructor();
 
 				if (constructor == null) {
-					throw new InvalidHandlingException(String.format("Cannot found default Constructor for [%s]"));
+					throw new InvalidHandlingException(String.format("Cannot found default Constructor for [%s]", cmdClazz.getName()));
 				}
 
 				Object instance = constructor.newInstance();

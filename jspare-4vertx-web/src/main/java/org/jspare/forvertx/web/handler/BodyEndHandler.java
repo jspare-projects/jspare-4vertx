@@ -13,16 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web;
+package org.jspare.forvertx.web.handler;
 
-import java.util.HashSet;
-import java.util.Set;
+import io.vertx.core.Handler;
+import io.vertx.ext.web.RoutingContext;
 
-public class TestUtils {
-
-	public static <T> Set<T> emptySet() {
-
-		return new HashSet<T>();
-	}
+public interface BodyEndHandler extends Handler<RoutingContext> {
 
 }

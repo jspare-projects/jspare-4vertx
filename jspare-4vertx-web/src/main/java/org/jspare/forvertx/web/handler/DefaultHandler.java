@@ -15,20 +15,25 @@
  */
 package org.jspare.forvertx.web.handler;
 
+
 import static org.jspare.core.container.Environment.my;
 
 import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 import org.apache.commons.lang.StringUtils;
 import org.jspare.core.exception.SerializationException;
 import org.jspare.core.serializer.Json;
+import org.jspare.forvertx.web.collector.HandlerData;
 import org.jspare.forvertx.web.handling.Handling;
 import org.jspare.forvertx.web.handling.HandlingFactory;
 import org.jspare.forvertx.web.mapping.handling.Model;
 
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.RoutingContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,18 +49,18 @@ public class DefaultHandler implements Handler<RoutingContext> {
 
 		try {
 
-			handlerData.before().forEach(middleware -> middleware.doIt(routingContext));
-
 			// Inject Request and Response if is Available
 			Object newInstance = my(HandlingFactory.class).instantiate(handlerData.clazz());
 
+			// If Route is handling by abstract Handling inject some resources
 			if (newInstance instanceof Handling) {
 
-				((Handling) newInstance).setRequest(routingContext.request());
-				((Handling) newInstance).setResponse(routingContext.response());
-				((Handling) newInstance).setRoutingContext(routingContext);
+				((Handling) newInstance).setReq(routingContext.request());
+				((Handling) newInstance).setRes(routingContext.response());
+				((Handling) newInstance).setCtx(routingContext);
 			}
 
+			// Prepare parameters to call method of route
 			Object[] parameters = new Object[handlerData.method().getParameterCount()];
 			int i = 0;
 			for (Parameter parameter : handlerData.method().getParameters()) {
@@ -63,26 +68,97 @@ public class DefaultHandler implements Handler<RoutingContext> {
 				parameters[i] = resolveParameter(parameter, routingContext);
 				i++;
 			}
-			
-			routingContext.addBodyEndHandler((event) -> {
-			
-				handlerData.after().forEach(middleware -> middleware.doIt(routingContext));
-			});
+
+			// Wrap bodyEndHandler to share routingContext
+			handlerData.bodyEndHandler().forEach(h -> routingContext.addBodyEndHandler(event -> {
+
+				h.handle(routingContext);
+			}));
+
+			// Check Authentication
+			if (handlerData.auth() && handlerData.authProvider() != null) {
+
+				handleAuthentication(routingContext, newInstance, parameters);
+				return;
+			}
+
+			if (handlerData.auth() && handlerData.authProvider() == null) {
+
+				log.warn("AuthProvider is null, ignoring Authentication and Authorization");
+			}
+
+			// Call method of handler data
 			handlerData.method().invoke(newInstance, parameters);
 
 		} catch (Throwable t) {
 
-			while (t.getCause() != null) {
-
-				t = t.getCause();
-			}
-			log.info("Error: {}", handlerData.toStringLine());
-			log.error(t.getMessage(), t);
-			routingContext.response().setStatusCode(500).end(t.toString());
+			catchInvoke(routingContext, t);
 		}
 	}
 
-	private Object resolveParameter(Parameter parameter, RoutingContext routingContext) {
+	protected void catchInvoke(RoutingContext routingContext, Throwable t) {
+		// Any server error return internal server error
+		while (t.getCause() != null) {
+
+			t = t.getCause();
+		}
+		log.info("Error: {}", handlerData.toStringLine());
+		log.error(t.getMessage(), t);
+		routingContext.response().setStatusCode(500).end(t.toString());
+	}
+
+	protected void handleAuthentication(RoutingContext routingContext, Object newInstance, Object[] parameters) {
+
+		JsonObject authData = handlerData.authProvider().provideAuthdata(routingContext);
+		handlerData.authProvider().authenticate(authData, authenticationResult -> {
+
+			try {
+
+				if (authenticationResult.succeeded()) {
+
+					routingContext.setUser(authenticationResult.result());
+					if (!handlerData.skipAuthorities() && StringUtils.isNotEmpty(handlerData.autority())) {
+
+						handleAuthorization(routingContext, newInstance, parameters);
+						return;
+					}
+					handlerData.method().invoke(newInstance, parameters);
+					return;
+				}
+
+				if (!routingContext.response().ended()) {
+
+					log.debug("AuthValidation failed, returning unauthorized status code");
+					sendStatus(routingContext, HttpResponseStatus.UNAUTHORIZED);
+				}
+
+			} catch (Throwable t) {
+
+				catchInvoke(routingContext, t);
+			}
+		});
+	}
+
+	protected void handleAuthorization(RoutingContext routingContext, Object newInstance, Object[] parameters) {
+		routingContext.user().isAuthorised(handlerData.autority(), authorizationResult -> {
+
+			if (authorizationResult.succeeded() && authorizationResult.result()) {
+
+				try {
+
+					handlerData.method().invoke(newInstance, parameters);
+					return;
+				} catch (Throwable t) {
+
+					catchInvoke(routingContext, t);
+				}
+			}
+
+			sendStatus(routingContext, HttpResponseStatus.FORBIDDEN);
+		});
+	}
+
+	protected Object resolveParameter(Parameter parameter, RoutingContext routingContext) {
 
 		if (parameter.getType().equals(RoutingContext.class)) {
 
@@ -113,13 +189,24 @@ public class DefaultHandler implements Handler<RoutingContext> {
 				return my(Json.class).fromJSON(routingContext.getBody().toString(), parameter.getType());
 			} catch (SerializationException e) {
 
-				log.warn("Invalid content of body for class [{}] on parameter [{}]", parameter.getClass(), parameter.getName());
+				log.debug("Invalid content of body for class [{}] on parameter [{}]", parameter.getClass(), parameter.getName());
 				return null;
 			}
 		}
 		if (parameter.isAnnotationPresent(org.jspare.forvertx.web.mapping.handling.Parameter.class)) {
 
 			String parameterName = parameter.getAnnotation(org.jspare.forvertx.web.mapping.handling.Parameter.class).value();
+			// Test types
+			Type typeOfParameter = parameter.getType();
+			if (typeOfParameter.equals(Integer.class)) {
+				return Integer.parseInt(routingContext.request().getParam(parameterName));
+			}
+			if (typeOfParameter.equals(Double.class)) {
+				return Double.parseDouble(routingContext.request().getParam(parameterName));
+			}
+			if (typeOfParameter.equals(Long.class)) {
+				return Long.parseLong(routingContext.request().getParam(parameterName));
+			}
 			return routingContext.request().getParam(parameterName);
 		}
 		if (parameter.isAnnotationPresent(org.jspare.forvertx.web.mapping.handling.Header.class)) {
@@ -129,5 +216,9 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		}
 
 		return null;
+	}
+
+	protected void sendStatus(RoutingContext routingContext, HttpResponseStatus status) {
+		routingContext.response().setStatusCode(status.code()).setStatusMessage(status.reasonPhrase()).end(status.reasonPhrase());
 	}
 }

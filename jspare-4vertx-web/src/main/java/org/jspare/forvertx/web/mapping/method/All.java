@@ -13,16 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web;
+package org.jspare.forvertx.web.mapping.method;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class TestUtils {
+import org.apache.commons.lang.StringUtils;
 
-	public static <T> Set<T> emptySet() {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE, ElementType.METHOD })
+public @interface All {
 
-		return new HashSet<T>();
-	}
+	boolean regex() default false;
 
+	String value() default StringUtils.EMPTY;
 }

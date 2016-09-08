@@ -13,10 +13,8 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.handler.mock.routes;
+package org.jspare.forvertx.web.collector;
 
-import org.jspare.forvertx.web.handling.Handling;
-import org.jspare.forvertx.web.mapping.handlers.Handler;
 import org.jspare.forvertx.web.mapping.method.All;
 import org.jspare.forvertx.web.mapping.method.Connect;
 import org.jspare.forvertx.web.mapping.method.Delete;
@@ -29,34 +27,15 @@ import org.jspare.forvertx.web.mapping.method.Post;
 import org.jspare.forvertx.web.mapping.method.Put;
 import org.jspare.forvertx.web.mapping.method.Trace;
 
-public class MultiHttpMethods extends Handling {
-	@All
-	@Connect
-	@Delete
-	@Get
-	@Post
-	@Head
-	@Options
-	@Other
-	@Path
-	@Put
-	@Trace
-	@Handler
-	public void handler1() {
-	}
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-	@All
-	@Connect
-	@Delete
-	@Get
-	@Post
-	@Head
-	@Options
-	@Other
-	@Path
-	@Put
-	@Trace
-	@Handler
-	public void handler2() {
-	}
+@AllArgsConstructor
+public enum HttpMethodType {
+
+	ALL(All.class), CONNECT(Connect.class), DELETE(Delete.class), GET(Get.class), HEAD(Head.class), OPTIONS(Options.class), OTHER(
+			Other.class), PATH(Path.class), POST(Post.class), PUT(Put.class), TRACE(Trace.class);
+
+	@Getter
+	private Class<?> httpMethodClass;
 }

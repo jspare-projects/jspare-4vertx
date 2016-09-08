@@ -13,16 +13,27 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web;
+package org.jspare.forvertx;
 
-import java.util.HashSet;
-import java.util.Set;
+import static org.jspare.core.container.Environment.my;
 
-public class TestUtils {
+import org.junit.Assert;
+import org.junit.Test;
 
-	public static <T> Set<T> emptySet() {
+import io.vertx.core.Vertx;
 
-		return new HashSet<T>();
+/**
+ * The Class VertxManagerTest.
+ */
+public class VertxManagerTest {
+
+	/**
+	 * Creates the test.
+	 */
+	@Test
+	public void createTest() {
+
+		Vertx vertx = my(VertxManager.class).vertx();
+		Assert.assertNotNull(vertx);
 	}
-
 }

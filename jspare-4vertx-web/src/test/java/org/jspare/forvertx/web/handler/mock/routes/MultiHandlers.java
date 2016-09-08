@@ -24,8 +24,10 @@ public class MultiHandlers extends Handling {
 
 	@Handler
 	@BlockingHandler
-	public void handler1() {}
-	
+	public void handler1() {
+	}
+
 	@FailureHandler
-	public void handler2() {}
+	public void handler2() {
+	}
 }

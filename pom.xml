@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.jspare.4vertx</groupId>
+	<artifactId>jspare-4vertx-main</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>JSpare 4Vert.x Main</name>
+	<url>http://4vertx.jspare.org</url>
+	<organization>
+		<name>JSpare.org</name>
+		<url>http://jspare.org</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<url>https://github.com/jspare-projects/jspare-container/issues</url>
+	</issueManagement>
+
+	<developers>
+		<developer>
+			<id>pflima92</id>
+			<name>Paulo Lima</name>
+			<email>pflima92@gmail.com</email>
+			<organization>JSpare Org.</organization>
+			<organizationUrl>http://jspare.org</organizationUrl>
+			<roles>
+				<role>Project lead</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<modules>
+
+		<module>jspare-4vertx</module>
+		<module>jspare-4vertx-web</module>
+	</modules>
+
+</project>

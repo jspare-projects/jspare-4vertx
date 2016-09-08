@@ -25,14 +25,14 @@ public class StartRoute extends Handling {
 	@Handler
 	public void route1() {
 
-		response.write("route 1\n");
-		routingContext.next();
+		res.write("route 1\n");
+		ctx.next();
 	}
 
 	@Handler
 	public void route2() {
 
-		response.write("route 2\n");
-		response.end();
+		res.write("route 2\n");
+		res.end();
 	}
 }

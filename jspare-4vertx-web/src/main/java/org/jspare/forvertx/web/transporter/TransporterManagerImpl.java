@@ -13,16 +13,28 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web;
+package org.jspare.forvertx.web.transporter;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.jspare.core.container.Inject;
+import org.jspare.forvertx.web.exceptions.UnavailableTransportException;
 
-public class TestUtils {
 
-	public static <T> Set<T> emptySet() {
+public class TransporterManagerImpl implements TransporterManager {
 
-		return new HashSet<T>();
+	@Inject
+	private TransporterHolder holder;
+
+	@Override
+	public Transporter create(Transporter.TransporterBuilder vertxBuilder) throws UnavailableTransportException {
+
+		Transporter transport = vertxBuilder.build();
+		holder.registry(transport);
+		return transport;
 	}
 
+	@Override
+	public Transporter retrieve(int port) {
+
+		return holder.get(port);
+	}
 }

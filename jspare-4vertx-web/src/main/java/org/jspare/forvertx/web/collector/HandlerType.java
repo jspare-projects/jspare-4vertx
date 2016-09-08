@@ -13,32 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.handler.mock.routes;
+package org.jspare.forvertx.web.collector;
 
-import org.jspare.forvertx.web.handling.Handling;
-import org.jspare.forvertx.web.mapping.content.Consumes;
-import org.jspare.forvertx.web.mapping.content.Produces;
 import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
+import org.jspare.forvertx.web.mapping.handlers.FailureHandler;
 import org.jspare.forvertx.web.mapping.handlers.Handler;
-import org.jspare.forvertx.web.mapping.method.Get;
 
-public class MultiRoutes extends Handling {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-	@Handler
-	@Get("/multiRoutes/1")
-	public void handler1() {
+@AllArgsConstructor
+public enum HandlerType {
 
-		res.write("multiRoutes 1\n");
-		ctx.next();
-	}
+	HANDLER(Handler.class), BLOCKING_HANDLER(BlockingHandler.class), FAILURE_HANDLER(FailureHandler.class);
 
-	@Consumes("*/*")
-	@Produces("text/plain")
-	@BlockingHandler(order = 1)
-	@Get(value = "/multiRoutes/2", regex = true)
-	public void handler2() {
-
-		res.write("multiRoutes 2\n");
-		res.end();
-	}
+	@Getter
+	private Class<?> handlerClass;
 }

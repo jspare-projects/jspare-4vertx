@@ -15,6 +15,7 @@
  */
 package org.jspare.forvertx.web.handling;
 
+
 import static org.jspare.core.container.Environment.my;
 
 import java.nio.charset.StandardCharsets;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import org.jspare.core.serializer.Json;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -31,13 +33,13 @@ import lombok.Setter;
 public abstract class Handling {
 
 	@Setter
-	protected HttpServerRequest request;
+	protected HttpServerRequest req;
 
 	@Setter
-	protected HttpServerResponse response;
+	protected HttpServerResponse res;
 
 	@Setter
-	protected RoutingContext routingContext;
+	protected RoutingContext ctx;
 
 	/**
 	 * Bad gateway.
@@ -45,6 +47,18 @@ public abstract class Handling {
 	public void badGateway() {
 
 		status(HttpResponseStatus.BAD_GATEWAY);
+		end();
+	}
+
+	/**
+	 * Bad gateway.
+	 */
+	public void badGateway(String content) {
+
+		status(HttpResponseStatus.BAD_GATEWAY);
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
+		end();
 	}
 
 	/**
@@ -53,6 +67,7 @@ public abstract class Handling {
 	public void badRequest() {
 
 		status(HttpResponseStatus.BAD_REQUEST);
+		end();
 	}
 
 	/**
@@ -66,8 +81,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.BAD_REQUEST);
 		contentType("application/json");
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -80,14 +95,9 @@ public abstract class Handling {
 	public void badRequest(String content) {
 
 		status(HttpResponseStatus.BAD_REQUEST);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
-	}
-
-	protected String body() {
-
-		return routingContext.getBodyAsString();
 	}
 
 	/**
@@ -110,8 +120,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.CONFLICT);
 		contentType("application/json");
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -124,21 +134,29 @@ public abstract class Handling {
 	public void conflict(String content) {
 
 		status(HttpResponseStatus.BAD_REQUEST);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
 	public HttpServerResponse contentType(String contentType) {
-		response.putHeader("content-type", contentType);
-		return response;
+		res.putHeader("content-type", contentType);
+		return res;
 	}
 
-	public void end(){
-		
-		if(!response.ended()){
-			
-			response.end();
+	public void end() {
+
+		if (!res.ended()) {
+
+			res.end();
+		}
+	}
+
+	public void end(Buffer buffer) {
+
+		if (!res.ended()) {
+
+			res.end(buffer);
 		}
 	}
 
@@ -147,7 +165,7 @@ public abstract class Handling {
 	 */
 	public void error() {
 
-		status(HttpResponseStatus.BAD_REQUEST);
+		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		end();
 	}
 
@@ -161,8 +179,8 @@ public abstract class Handling {
 
 		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		contentType("application/json");
-		response.setChunked(true);
-		response.write(e.getMessage());
+		res.setChunked(true);
+		res.write(e.getMessage());
 		end();
 	}
 
@@ -175,8 +193,8 @@ public abstract class Handling {
 	public void error(String content) {
 
 		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -200,8 +218,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.FORBIDDEN);
 		contentType("application/json");
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -214,19 +232,19 @@ public abstract class Handling {
 	public void forbidden(String content) {
 
 		status(HttpResponseStatus.BAD_REQUEST);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
 	public Optional<String> getHeader(String name) {
 
-		return Optional.ofNullable(request.getHeader(name));
+		return Optional.ofNullable(req.getHeader(name));
 	}
 
 	public String getParameter(String name) {
 
-		return request.getParam(name);
+		return req.getParam(name);
 	}
 
 	/**
@@ -285,8 +303,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.PRECONDITION_FAILED);
 		contentType("application/json");
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -299,15 +317,15 @@ public abstract class Handling {
 	public void preConditionFailed(String content) {
 
 		status(HttpResponseStatus.PRECONDITION_FAILED);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
 	public HttpServerResponse status(HttpResponseStatus status) {
-		response.setStatusCode(status.code());
-		response.setStatusMessage(status.reasonPhrase());
-		return response;
+		res.setStatusCode(status.code());
+		res.setStatusMessage(status.reasonPhrase());
+		return res;
 	}
 
 	/**
@@ -317,6 +335,18 @@ public abstract class Handling {
 
 		status(HttpResponseStatus.OK);
 		end();
+	}
+
+	/**
+	 * Success using {@link Buffer}.
+	 *
+	 * @param buffer
+	 *            the vertx buffer
+	 */
+	public void success(Buffer buffer) {
+
+		status(HttpResponseStatus.OK);
+		end(buffer);
 	}
 
 	/**
@@ -330,8 +360,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		status(HttpResponseStatus.OK);
 		contentType("application/json");
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -347,7 +377,7 @@ public abstract class Handling {
 			contentType("application/json");
 		}
 
-		response.setChunked(true);
+		res.setChunked(true);
 		status(HttpResponseStatus.OK).write(content);
 		end();
 	}
@@ -372,8 +402,8 @@ public abstract class Handling {
 		String content = my(Json.class).toJSON(object);
 		contentType("application/json");
 		status(HttpResponseStatus.UNAUTHORIZED);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
 
@@ -386,11 +416,11 @@ public abstract class Handling {
 	public void unauthorized(String content) {
 
 		status(HttpResponseStatus.UNAUTHORIZED);
-		response.setChunked(true);
-		response.write(content, StandardCharsets.UTF_8.name());
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
 		end();
 	}
-	
+
 	/**
 	 * Unvailable.
 	 */
@@ -398,5 +428,10 @@ public abstract class Handling {
 
 		status(HttpResponseStatus.SERVICE_UNAVAILABLE);
 		end();
+	}
+
+	protected String body() {
+
+		return ctx.getBodyAsString();
 	}
 }

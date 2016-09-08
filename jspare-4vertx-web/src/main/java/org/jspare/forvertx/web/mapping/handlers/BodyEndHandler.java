@@ -13,16 +13,16 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web;
+package org.jspare.forvertx.web.mapping.handlers;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class TestUtils {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.METHOD })
+public @interface BodyEndHandler {
 
-	public static <T> Set<T> emptySet() {
-
-		return new HashSet<T>();
-	}
-
+	Class<? extends org.jspare.forvertx.web.handler.BodyEndHandler>[] value();
 }

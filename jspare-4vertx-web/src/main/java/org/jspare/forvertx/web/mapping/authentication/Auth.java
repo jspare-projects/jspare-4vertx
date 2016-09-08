@@ -13,16 +13,42 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package org.jspare.forvertx.web.mapping.handlers;
+package org.jspare.forvertx.web.mapping.authentication;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * The Annotation Security. <br>
+ * It is defined annotation that is the route to be safe and protected for Token
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
-public @interface BlockingHandler {
+public @interface Auth {
 
-	int order() default 0;
+	/**
+	 * Description of this handler authentication.
+	 *
+	 * @return the string
+	 */
+	String description() default StringUtils.EMPTY;
+
+	/**
+	 * The Skip roles attribute allows any user who is authenticated to access
+	 * the handler.
+	 *
+	 * @return true, if selected
+	 */
+	boolean skipAuthorities() default false;
+
+	/**
+	 * Define the authority of route for user authentication.
+	 *
+	 * @return the string
+	 */
+	String value() default StringUtils.EMPTY;
 }

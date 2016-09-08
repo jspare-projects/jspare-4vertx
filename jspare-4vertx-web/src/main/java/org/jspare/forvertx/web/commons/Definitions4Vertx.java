@@ -18,32 +18,25 @@ package org.jspare.forvertx.web.commons;
 import java.io.File;
 
 import org.jspare.core.commons.Definitions;
-import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
-import org.jspare.forvertx.web.mapping.handlers.FailureHandler;
-import org.jspare.forvertx.web.mapping.handlers.Handler;
-import org.jspare.forvertx.web.mapping.method.Connect;
-import org.jspare.forvertx.web.mapping.method.Delete;
-import org.jspare.forvertx.web.mapping.method.Get;
-import org.jspare.forvertx.web.mapping.method.Head;
-import org.jspare.forvertx.web.mapping.method.Options;
-import org.jspare.forvertx.web.mapping.method.Other;
-import org.jspare.forvertx.web.mapping.method.Path;
-import org.jspare.forvertx.web.mapping.method.Post;
-import org.jspare.forvertx.web.mapping.method.Put;
-import org.jspare.forvertx.web.mapping.method.Trace;
+
 
 public interface Definitions4Vertx extends Definitions {
 
-	Class<?>[] HTTP_METHODS_TYPES = new Class<?>[] { Connect.class, Delete.class, Get.class, Head.class, Options.class, Other.class,
-			Path.class, Post.class, Put.class, Trace.class };
+	String DEFAULT_HTTP_OPTIONS_JSON_PATH = "httpServerOptions.json";
 
-	Class<?>[] HANDLERS_TYPES = new Class<?>[] { Handler.class, FailureHandler.class, BlockingHandler.class };
+	String FILE_UPLOADS_PATH = "file-uploads";
 
 	/** The Constant ROUTES_PACKAGE */
 	String ROUTES_PACKAGE = ".routes";
 
 	/** The Constant SERVER_PORT_KEY. */
 	String SERVER_PORT_KEY = "server.default.port";
+
+	/**
+	 * The Constant SERVER_PORT_AUTO_KEY. The auto port will be selected only if
+	 * server.default.port is not setted
+	 */
+	String SERVER_PORT_AUTO_KEY = "server.default.port.auto";
 
 	int SERVER_DEFAULT_BODY_SIZE = -1;
 
@@ -64,4 +57,6 @@ public interface Definitions4Vertx extends Definitions {
 
 	/** The certificate keystore password. */
 	String SSL_KEYSTORE_PASSWORD = "";
+
+	int START_PORT_SCAN = 8000;
 }
