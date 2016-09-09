@@ -52,4 +52,10 @@ public class TransporterHolderImpl implements TransporterHolder {
 			transport.getHttpServer().close();
 		}
 	}
+
+	@Override
+	public int[] ports() {
+		
+		return transports.keySet().stream().mapToInt(t -> t).toArray();
+	}
 }

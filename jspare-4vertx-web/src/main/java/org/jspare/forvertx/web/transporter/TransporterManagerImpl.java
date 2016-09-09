@@ -37,4 +37,10 @@ public class TransporterManagerImpl implements TransporterManager {
 
 		return holder.get(port);
 	}
+
+	@Override
+	public int[] ports() {
+
+		return holder.ports();
+	}
 }

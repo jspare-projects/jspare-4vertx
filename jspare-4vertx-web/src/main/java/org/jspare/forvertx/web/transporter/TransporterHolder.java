@@ -59,4 +59,11 @@ public interface TransporterHolder {
 	 *            the deployment id
 	 */
 	void release(int port);
+	
+	/**
+	 * Retrieve all Ports available on transport manager.
+	 *
+	 * @return the int[]
+	 */
+	int[] ports();
 }

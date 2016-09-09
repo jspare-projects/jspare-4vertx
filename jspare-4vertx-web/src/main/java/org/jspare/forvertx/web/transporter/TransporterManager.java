@@ -25,4 +25,6 @@ public interface TransporterManager {
 	Transporter create(Transporter.TransporterBuilder vertxBuilder) throws UnavailableTransportException;
 
 	Transporter retrieve(int port);
+	
+	int[] ports();
 }

@@ -407,7 +407,7 @@ public class Transporter extends AbstractVerticle {
 	 *
 	 * @return the list
 	 */
-	private List<HandlerData> collectHandlers() {
+	public List<HandlerData> collectHandlers() {
 
 		List<HandlerData> handlers = new ArrayList<>();
 		handlers.addAll(collectRoutesHandlers());
