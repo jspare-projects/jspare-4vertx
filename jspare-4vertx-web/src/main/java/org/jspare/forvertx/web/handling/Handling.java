@@ -183,6 +183,22 @@ public abstract class Handling {
 		res.write(e.getMessage());
 		end();
 	}
+	
+	/**
+	 * Error.
+	 *
+	 * @param e
+	 *            the e
+	 */
+	public void error(Object object) {
+
+		String content = my(Json.class).toJSON(object);
+		status(HttpResponseStatus.INTERNAL_SERVER_ERROR);
+		contentType("application/json");
+		res.setChunked(true);
+		res.write(content, StandardCharsets.UTF_8.name());
+		end();
+	}
 
 	/**
 	 * Error.
