@@ -4,11 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.jspare.4vertx</groupId>
 	<artifactId>jspare-4vertx-parent</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0-M01</version>
 	<packaging>pom</packaging>
 
 	<name>JSpare 4Vertx Parent</name>
 	<url>http://4vertx.jspare.org</url>
+	<description>Improve your Vertx experience with 4vertx</description>
 	<organization>
 		<name>JSpare.org</name>
 		<url>http://jspare.org</url>
@@ -20,6 +21,12 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
+
+	<scm>
+		<url>https://github.com/jspare-projects/jspare-4vertx</url>
+		<connection>scm:git:git://github.com/jspare-projects/jspare-4vertx.git</connection>
+		<developerConnection>scm:git:git@github.com:jspare-projects/jspare-4vertx.git</developerConnection>
+	</scm>
 
 	<issueManagement>
 		<url>https://github.com/jspare-projects/jspare-4vertx/issues</url>
@@ -48,6 +55,7 @@
 		<logback.version>1.1.6</logback.version>
 		<junit.version>4.12</junit.version>
 		<jspare.core.version>1.0.0</jspare.core.version>
+		<maven.javadoc.version>2.10.4</maven.javadoc.version>
 	</properties>
 
 	<build>
@@ -68,6 +76,19 @@
 				<executions>
 					<execution>
 						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven.javadoc.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
 						<goals>
 							<goal>jar</goal>
 						</goals>
@@ -158,7 +179,7 @@
 		</dependency>
 
 	</dependencies>
-	
+
 	<modules>
 		<module>jspare-4vertx</module>
 		<module>jspare-4vertx-web</module>

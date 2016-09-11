@@ -38,12 +38,23 @@ import io.vertx.ext.web.RoutingContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/** The Constant log. */
 @Slf4j
+
+/**
+ * Instantiates a new default handler.
+ *
+ * @param handlerData the handler data
+ */
 @AllArgsConstructor
 public class DefaultHandler implements Handler<RoutingContext> {
 
+	/** The handler data. */
 	private final HandlerData handlerData;
 
+	/* (non-Javadoc)
+	 * @see io.vertx.core.Handler#handle(java.lang.Object)
+	 */
 	@Override
 	public void handle(RoutingContext routingContext) {
 
@@ -96,6 +107,12 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		}
 	}
 
+	/**
+	 * Catch invoke.
+	 *
+	 * @param routingContext the routing context
+	 * @param t the t
+	 */
 	protected void catchInvoke(RoutingContext routingContext, Throwable t) {
 		// Any server error return internal server error
 		while (t.getCause() != null) {
@@ -107,6 +124,13 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		routingContext.response().setStatusCode(500).end(t.toString());
 	}
 
+	/**
+	 * Handle authentication.
+	 *
+	 * @param routingContext the routing context
+	 * @param newInstance the new instance
+	 * @param parameters the parameters
+	 */
 	protected void handleAuthentication(RoutingContext routingContext, Object newInstance, Object[] parameters) {
 
 		JsonObject authData = handlerData.authProvider().provideAuthdata(routingContext);
@@ -139,6 +163,13 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		});
 	}
 
+	/**
+	 * Handle authorization.
+	 *
+	 * @param routingContext the routing context
+	 * @param newInstance the new instance
+	 * @param parameters the parameters
+	 */
 	protected void handleAuthorization(RoutingContext routingContext, Object newInstance, Object[] parameters) {
 		routingContext.user().isAuthorised(handlerData.autority(), authorizationResult -> {
 
@@ -158,6 +189,13 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		});
 	}
 
+	/**
+	 * Resolve parameter.
+	 *
+	 * @param parameter the parameter
+	 * @param routingContext the routing context
+	 * @return the object
+	 */
 	protected Object resolveParameter(Parameter parameter, RoutingContext routingContext) {
 
 		if (parameter.getType().equals(RoutingContext.class)) {
@@ -218,6 +256,12 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		return null;
 	}
 
+	/**
+	 * Send status.
+	 *
+	 * @param routingContext the routing context
+	 * @param status the status
+	 */
 	protected void sendStatus(RoutingContext routingContext, HttpResponseStatus status) {
 		routingContext.response().setStatusCode(status.code()).setStatusMessage(status.reasonPhrase()).end(status.reasonPhrase());
 	}

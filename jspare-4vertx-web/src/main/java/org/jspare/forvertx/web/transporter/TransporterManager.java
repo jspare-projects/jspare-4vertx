@@ -18,13 +18,33 @@ package org.jspare.forvertx.web.transporter;
 import org.jspare.core.container.Component;
 import org.jspare.forvertx.web.exceptions.UnavailableTransportException;
 
-
+/**
+ * The Interface TransporterManager.
+ */
 @Component
 public interface TransporterManager {
 
+	/**
+	 * Creates the.
+	 *
+	 * @param vertxBuilder the vertx builder
+	 * @return the transporter
+	 * @throws UnavailableTransportException the unavailable transport exception
+	 */
 	Transporter create(Transporter.TransporterBuilder vertxBuilder) throws UnavailableTransportException;
 
+	/**
+	 * Retrieve.
+	 *
+	 * @param port the port
+	 * @return the transporter
+	 */
 	Transporter retrieve(int port);
 	
+	/**
+	 * Ports.
+	 *
+	 * @return the int[]
+	 */
 	int[] ports();
 }

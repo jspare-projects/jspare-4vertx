@@ -19,11 +19,18 @@ import org.jspare.core.container.Inject;
 import org.jspare.forvertx.web.exceptions.UnavailableTransportException;
 
 
+/**
+ * The Class TransporterManagerImpl.
+ */
 public class TransporterManagerImpl implements TransporterManager {
 
+	/** The holder. */
 	@Inject
 	private TransporterHolder holder;
 
+	/* (non-Javadoc)
+	 * @see org.jspare.forvertx.web.transporter.TransporterManager#create(org.jspare.forvertx.web.transporter.Transporter.TransporterBuilder)
+	 */
 	@Override
 	public Transporter create(Transporter.TransporterBuilder vertxBuilder) throws UnavailableTransportException {
 
@@ -32,12 +39,18 @@ public class TransporterManagerImpl implements TransporterManager {
 		return transport;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.jspare.forvertx.web.transporter.TransporterManager#retrieve(int)
+	 */
 	@Override
 	public Transporter retrieve(int port) {
 
 		return holder.get(port);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.jspare.forvertx.web.transporter.TransporterManager#ports()
+	 */
 	@Override
 	public int[] ports() {
 

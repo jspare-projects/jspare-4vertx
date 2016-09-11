@@ -13,6 +13,21 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+/*
+ * Copyright 2016 JSpare.org.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 /**
  * Copyright 2016 Senior Sistemas.
  *
@@ -78,9 +93,7 @@ import lombok.extern.slf4j.Slf4j;
 /** The Constant log. */
 @Slf4j
 
-/*
- * (non-Javadoc)
- *
+/* (non-Javadoc)
  * @see java.lang.Object#toString()
  */
 @Builder
@@ -121,6 +134,12 @@ public class Transporter extends AbstractVerticle {
 	}
 	
 	/** The name. */
+	
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	@Getter
 	private String name;
 
@@ -129,9 +148,16 @@ public class Transporter extends AbstractVerticle {
 	 *
 	 * @return the port
 	 */
+	
+	/**
+	 * Gets the port.
+	 *
+	 * @return the port
+	 */
 	@Getter
 	private int port;
 
+	/** The vertx. */
 	/*
 	 * (non-Javadoc)
 	 *
@@ -173,9 +199,7 @@ public class Transporter extends AbstractVerticle {
 	private HttpServerOptions httpServerOptions = new HttpServerOptions().setTcpKeepAlive(true).setReuseAddress(true);
 
 	/**
-	 * Gets the routes class <br>
-	 * The Routes can receive any mapped class to be wraped on one potential
-	 * route.
+	 * Gets the routes.
 	 *
 	 * @return the routes
 	 */
@@ -201,19 +225,26 @@ public class Transporter extends AbstractVerticle {
 	 *	Define the default routeHandler any request
 	 *
 	 * @return the route handler
-	 *  /*/
+	 * */
 	@Getter
 	private Class<? extends Handler<RoutingContext>> routeHandler;
 	
+	
+	/**
+	 * Checks if is ignore body handler.
+	 *
+	 * @return true, if is ignore body handler
+	 */
 	@Getter
 	private boolean ignoreBodyHandler;
-	
-	/** The body handler.
-	 *
-	 *	Define the default bodyHandler for requests
+
+	/**
+	 * Gets the body handler.
+	 * 
+	 * Define the default bodyHandler for requests
 	 *
 	 * @return the body handler
-	 *  /*/
+	 */
 	@Getter
 	private Handler<RoutingContext> bodyHandler;
 	
@@ -228,30 +259,31 @@ public class Transporter extends AbstractVerticle {
 	@Singular("addDefaultBodyEndHandler")
 	private List<BodyEndHandler> defaultBodyEndHandlers;
 
+	/**
+	 * Gets the auth provider.
+	 *
+	 * @return the auth provider
+	 */
 	@Getter
 	private AuthProvider authProvider;
 
 	/**
 	 * Instantiates a new transporter.
 	 *
-	 * @param port
-	 *            the port
-	 * @param vertx
-	 *            the vertx
-	 * @param httpServer
-	 *            the http server
-	 * @param router
-	 *            the router
-	 * @param source4conventions
-	 *            the source 4 conventions
-	 * @param httpServerOptions
-	 *            the http server options
-	 * @param routes
-	 *            the routes
-	 * @param handlers
-	 *            the handlers
-	 * @param defaultBodyEndHandlers
-	 *            the default body end handlers
+	 * @param name the name
+	 * @param port the port
+	 * @param vertx the vertx
+	 * @param httpServer the http server
+	 * @param router the router
+	 * @param source4conventions the source 4 conventions
+	 * @param httpServerOptions the http server options
+	 * @param routes the routes
+	 * @param handlers the handlers
+	 * @param routeHandler the route handler
+	 * @param ignoreBodyHandler the ignore body handler
+	 * @param bodyHandler the body handler
+	 * @param defaultBodyEndHandlers the default body end handlers
+	 * @param authProvider the auth provider
 	 */
 	public Transporter(String name, int port, Vertx vertx, HttpServer httpServer, Router router, Object source4conventions,
 			HttpServerOptions httpServerOptions, List<Class<?>> routes, List<Handler<RoutingContext>> handlers, Class<? extends Handler<RoutingContext>> routeHandler, boolean ignoreBodyHandler, Handler<RoutingContext> bodyHandler,

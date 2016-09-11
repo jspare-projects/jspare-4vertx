@@ -22,11 +22,24 @@ import java.lang.annotation.Target;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * The Interface Post.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 public @interface Post {
 
+	/**
+	 * Regex.
+	 *
+	 * @return true, if successful
+	 */
 	boolean regex() default false;
 
+	/**
+	 * Value.
+	 *
+	 * @return the string
+	 */
 	String value() default StringUtils.EMPTY;
 }

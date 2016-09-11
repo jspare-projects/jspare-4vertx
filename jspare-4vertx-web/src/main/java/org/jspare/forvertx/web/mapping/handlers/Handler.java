@@ -20,9 +20,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Interface Handler.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface Handler {
 
+	/**
+	 * Order.
+	 *
+	 * @return the int
+	 */
 	int order() default 0;
 }

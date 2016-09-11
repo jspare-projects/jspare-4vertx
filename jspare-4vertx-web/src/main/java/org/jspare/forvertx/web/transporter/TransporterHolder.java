@@ -31,19 +31,16 @@ public interface TransporterHolder {
 	/**
 	 * Gets the.
 	 *
-	 * @param deploymentId
-	 *            the deployment id
-	 * @return the http server
+	 * @param port the port
+	 * @return the transporter
 	 */
 	Transporter get(int port);
 
 	/**
 	 * Registry.
 	 *
-	 * @param deploymentId
-	 *            the deployment id
-	 * @param httpServer
-	 *            the http server
+	 * @param vertxTransport the vertx transport
+	 * @throws UnavailableTransportException the unavailable transport exception
 	 */
 	void registry(Transporter vertxTransport) throws UnavailableTransportException;
 
@@ -55,13 +52,12 @@ public interface TransporterHolder {
 	/**
 	 * Release.
 	 *
-	 * @param deploymentId
-	 *            the deployment id
+	 * @param port the port
 	 */
 	void release(int port);
 	
 	/**
-	 * Retrieve all Ports available on transport manager.
+	 * Ports.
 	 *
 	 * @return the int[]
 	 */

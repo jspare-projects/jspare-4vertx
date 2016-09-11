@@ -29,15 +29,28 @@ import io.vertx.ext.web.RoutingContext;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+/** The Constant log. */
 @Slf4j
 public class HandlerWrapper {
 
+	/**
+	 * Prepare handler.
+	 *
+	 * @param router the router
+	 * @param handler the handler
+	 */
 	public static void prepareHandler(Router router, Handler<RoutingContext> handler) {
 
 		log.debug("Mapping handler [Middleware]: {}", handler.getClass().getName());
 		router.route().order(Integer.MIN_VALUE).handler(handler);
 	}
 
+	/**
+	 * Prepare handler.
+	 *
+	 * @param router the router
+	 * @param data the data
+	 */
 	public static void prepareHandler(Router router, HandlerData data) {
 
 		log.debug("Mapping handler: {}", data.toStringLine());
@@ -63,10 +76,22 @@ public class HandlerWrapper {
 		setHandler(data, route);
 	}
 
+	/**
+	 * Sets the consumes.
+	 *
+	 * @param data the data
+	 * @param route the route
+	 */
 	protected static void setConsumes(HandlerData data, Route route) {
 		route.consumes(data.consumes());
 	}
 
+	/**
+	 * Sets the handler.
+	 *
+	 * @param data the data
+	 * @param route the route
+	 */
 	protected static void setHandler(HandlerData data, Route route) {
 
 		if (HandlerType.HANDLER.equals(data.handlerType())) {
@@ -81,6 +106,12 @@ public class HandlerWrapper {
 		}
 	}
 
+	/**
+	 * Prepare handler.
+	 *
+	 * @param handlerData the handler data
+	 * @return the handler
+	 */
 	@SneakyThrows({ InstantiationException.class, IllegalAccessException.class, IllegalArgumentException.class,
 			InvocationTargetException.class, NoSuchMethodException.class })
 	private static Handler<RoutingContext> prepareHandler(HandlerData handlerData) {
@@ -88,10 +119,22 @@ public class HandlerWrapper {
 		return handlerData.routeHandler().getConstructor(HandlerData.class).newInstance(handlerData);
 	}
 
+	/**
+	 * Sets the method.
+	 *
+	 * @param data the data
+	 * @param route the route
+	 */
 	protected static void setMethod(HandlerData data, Route route) {
 		route.method(HttpMethod.valueOf(data.httpMethod()));
 	}
 
+	/**
+	 * Sets the patch.
+	 *
+	 * @param data the data
+	 * @param route the route
+	 */
 	protected static void setPatch(HandlerData data, Route route) {
 		if (data.pathRegex()) {
 
@@ -102,6 +145,12 @@ public class HandlerWrapper {
 		}
 	}
 
+	/**
+	 * Sets the produces.
+	 *
+	 * @param data the data
+	 * @param route the route
+	 */
 	protected static void setProduces(HandlerData data, Route route) {
 		route.produces(data.produces());
 	}

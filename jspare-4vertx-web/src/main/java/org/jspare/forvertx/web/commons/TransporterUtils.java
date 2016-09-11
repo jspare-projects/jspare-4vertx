@@ -19,13 +19,17 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 
+/**
+ * The Class TransporterUtils.
+ */
 public class TransporterUtils {
 
+
 	/**
-	 * Checks to see if a specific port is available.
-	 *
-	 * @param port
-	 *            the port to check for availability
+	 * Checks to see if a specific port is available..
+	 * 
+	 * @param port the port
+	 * @return true, if successful
 	 */
 	public static boolean available(int port) {
 

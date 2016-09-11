@@ -18,6 +18,9 @@ package org.jspare.forvertx.web.handler;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
 
+/**
+ * The Interface BodyEndHandler.
+ */
 public interface BodyEndHandler extends Handler<RoutingContext> {
 
 }

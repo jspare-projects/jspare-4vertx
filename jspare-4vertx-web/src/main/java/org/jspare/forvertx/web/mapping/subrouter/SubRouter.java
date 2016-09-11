@@ -20,6 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.jspare.forvertx.web.handling.Handling;
+
 import io.vertx.ext.web.Router;
 
 /**
@@ -27,15 +29,14 @@ import io.vertx.ext.web.Router;
  *
  * <p>
  * The namespace annotation is used for mapping one namespace of one
- * {@link Controller}. When one type are annotatedwith this annotation and
- * registered on {@link Router} when your {@link Server} will be started your
+ * {@link Handling}. When one type are annotatedwith this annotation and
+ * registered on {@link Router} when your HttpServer will be started your
  * mappings will be registered with prefix defined on value field, if your field
  * are empty the convetion that follow will be used:
  *
  * <br>
- * [Prefix]Controller ==> [prefix]/[your mapping] <b>e.g: UsersController ==>
+ * [Prefix]Controller: [prefix]/[your mapping] <b>e.g: UsersController: 
  * users/</b>
- *
  * </p>
  *
  * @author pflima

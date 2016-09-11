@@ -20,9 +20,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Interface FailureHandler.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface FailureHandler {
 
+	/**
+	 * Order.
+	 *
+	 * @return the int
+	 */
 	int order() default 0;
 }

@@ -30,14 +30,26 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 import lombok.Setter;
 
+/**
+ * The Class Handling.
+ */
 public abstract class Handling {
 
+	/**
+	 * Sets the req.
+	 */
 	@Setter
 	protected HttpServerRequest req;
 
+	/**
+	 * Sets the res.
+	 */
 	@Setter
 	protected HttpServerResponse res;
 
+	/**
+	 * Sets the ctx.
+	 */
 	@Setter
 	protected RoutingContext ctx;
 
@@ -52,6 +64,8 @@ public abstract class Handling {
 
 	/**
 	 * Bad gateway.
+	 *
+	 * @param content the content
 	 */
 	public void badGateway(String content) {
 
@@ -73,8 +87,7 @@ public abstract class Handling {
 	/**
 	 * Bad request.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 */
 	public void badRequest(Object object) {
 
@@ -89,8 +102,7 @@ public abstract class Handling {
 	/**
 	 * Bad request.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void badRequest(String content) {
 
@@ -112,8 +124,7 @@ public abstract class Handling {
 	/**
 	 * Conflict.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 */
 	public void conflict(Object object) {
 
@@ -128,8 +139,7 @@ public abstract class Handling {
 	/**
 	 * Conflict.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void conflict(String content) {
 
@@ -139,11 +149,20 @@ public abstract class Handling {
 		end();
 	}
 
+	/**
+	 * Content type.
+	 *
+	 * @param contentType the content type
+	 * @return the http server response
+	 */
 	public HttpServerResponse contentType(String contentType) {
 		res.putHeader("content-type", contentType);
 		return res;
 	}
 
+	/**
+	 * End.
+	 */
 	public void end() {
 
 		if (!res.ended()) {
@@ -152,6 +171,11 @@ public abstract class Handling {
 		}
 	}
 
+	/**
+	 * End.
+	 *
+	 * @param buffer the buffer
+	 */
 	public void end(Buffer buffer) {
 
 		if (!res.ended()) {
@@ -172,8 +196,7 @@ public abstract class Handling {
 	/**
 	 * Error.
 	 *
-	 * @param e
-	 *            the e
+	 * @param e the e
 	 */
 	public void error(Exception e) {
 
@@ -187,8 +210,7 @@ public abstract class Handling {
 	/**
 	 * Error.
 	 *
-	 * @param e
-	 *            the e
+	 * @param object the object
 	 */
 	public void error(Object object) {
 
@@ -203,8 +225,7 @@ public abstract class Handling {
 	/**
 	 * Error.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void error(String content) {
 
@@ -226,8 +247,7 @@ public abstract class Handling {
 	/**
 	 * Forbidden.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 */
 	public void forbidden(Object object) {
 
@@ -242,8 +262,7 @@ public abstract class Handling {
 	/**
 	 * Forbidden.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void forbidden(String content) {
 
@@ -253,11 +272,23 @@ public abstract class Handling {
 		end();
 	}
 
+	/**
+	 * Gets the header.
+	 *
+	 * @param name the name
+	 * @return the header
+	 */
 	public Optional<String> getHeader(String name) {
 
 		return Optional.ofNullable(req.getHeader(name));
 	}
 
+	/**
+	 * Gets the parameter.
+	 *
+	 * @param name the name
+	 * @return the parameter
+	 */
 	public String getParameter(String name) {
 
 		return req.getParam(name);
@@ -311,8 +342,7 @@ public abstract class Handling {
 	/**
 	 * Pre condition failed.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 */
 	public void preConditionFailed(Object object) {
 
@@ -327,8 +357,7 @@ public abstract class Handling {
 	/**
 	 * Pre condition failed.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void preConditionFailed(String content) {
 
@@ -338,6 +367,12 @@ public abstract class Handling {
 		end();
 	}
 
+	/**
+	 * Status.
+	 *
+	 * @param status the status
+	 * @return the http server response
+	 */
 	public HttpServerResponse status(HttpResponseStatus status) {
 		res.setStatusCode(status.code());
 		res.setStatusMessage(status.reasonPhrase());
@@ -354,10 +389,9 @@ public abstract class Handling {
 	}
 
 	/**
-	 * Success using {@link Buffer}.
+	 * Success.
 	 *
-	 * @param buffer
-	 *            the vertx buffer
+	 * @param buffer the buffer
 	 */
 	public void success(Buffer buffer) {
 
@@ -368,8 +402,7 @@ public abstract class Handling {
 	/**
 	 * Success.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 */
 	public void success(Object object) {
 
@@ -384,8 +417,7 @@ public abstract class Handling {
 	/**
 	 * Success.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void success(String content) {
 
@@ -410,8 +442,7 @@ public abstract class Handling {
 	/**
 	 * Unauthorized.
 	 *
-	 * @param object
-	 *            the object
+	 * @param object the object
 	 */
 	public void unauthorized(Object object) {
 
@@ -426,8 +457,7 @@ public abstract class Handling {
 	/**
 	 * Unauthorized.
 	 *
-	 * @param content
-	 *            the content
+	 * @param content the content
 	 */
 	public void unauthorized(String content) {
 
@@ -446,6 +476,11 @@ public abstract class Handling {
 		end();
 	}
 
+	/**
+	 * Body.
+	 *
+	 * @return the string
+	 */
 	protected String body() {
 
 		return ctx.getBodyAsString();

@@ -20,9 +20,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * The Interface BodyEndHandler.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD })
 public @interface BodyEndHandler {
 
+	/**
+	 * Value.
+	 *
+	 * @return the class
+	 */
 	Class<? extends org.jspare.forvertx.web.handler.BodyEndHandler>[] value();
 }

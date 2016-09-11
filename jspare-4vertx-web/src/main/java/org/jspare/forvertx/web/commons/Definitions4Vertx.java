@@ -20,10 +20,15 @@ import java.io.File;
 import org.jspare.core.commons.Definitions;
 
 
+/**
+ * The Interface Definitions4Vertx.
+ */
 public interface Definitions4Vertx extends Definitions {
 
+	/** The default http options json path. */
 	String DEFAULT_HTTP_OPTIONS_JSON_PATH = "httpServerOptions.json";
 
+	/** The file uploads path. */
 	String FILE_UPLOADS_PATH = "file-uploads";
 
 	/** The Constant ROUTES_PACKAGE */
@@ -38,6 +43,7 @@ public interface Definitions4Vertx extends Definitions {
 	 */
 	String SERVER_PORT_AUTO_KEY = "server.default.port.auto";
 
+	/** The server default body size. */
 	int SERVER_DEFAULT_BODY_SIZE = -1;
 
 	/** The default port. */
@@ -58,5 +64,6 @@ public interface Definitions4Vertx extends Definitions {
 	/** The certificate keystore password. */
 	String SSL_KEYSTORE_PASSWORD = "";
 
+	/** The start port scan. */
 	int START_PORT_SCAN = 8000;
 }
