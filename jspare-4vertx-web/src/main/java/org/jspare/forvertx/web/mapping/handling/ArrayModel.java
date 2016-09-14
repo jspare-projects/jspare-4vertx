@@ -22,16 +22,23 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * The Interface Model.
- *
- * @author pflima
- * @since 22/04/2016
+ * The Interface ArrayModel.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.PARAMETER, ElementType.FIELD })
 public @interface ArrayModel {
 
+	/**
+	 * Collection class.
+	 *
+	 * @return the class
+	 */
 	Class<?> collectionClass() default List.class;
 
+	/**
+	 * Value.
+	 *
+	 * @return the class
+	 */
 	Class<?> value();
 }
