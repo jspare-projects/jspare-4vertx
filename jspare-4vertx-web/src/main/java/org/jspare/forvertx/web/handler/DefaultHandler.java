@@ -15,11 +15,11 @@
  */
 package org.jspare.forvertx.web.handler;
 
-
 import static org.jspare.core.container.Environment.my;
 
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
 import org.jspare.core.exception.SerializationException;
@@ -27,6 +27,10 @@ import org.jspare.core.serializer.Json;
 import org.jspare.forvertx.web.collector.HandlerData;
 import org.jspare.forvertx.web.handling.Handling;
 import org.jspare.forvertx.web.handling.HandlingFactory;
+import org.jspare.forvertx.web.mapping.handling.ArrayModel;
+import org.jspare.forvertx.web.mapping.handling.ArrayModelParser;
+import org.jspare.forvertx.web.mapping.handling.MapModel;
+import org.jspare.forvertx.web.mapping.handling.MapModelParser;
 import org.jspare.forvertx.web.mapping.handling.Model;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -44,7 +48,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Instantiates a new default handler.
  *
- * @param handlerData the handler data
+ * @param handlerData
+ *            the handler data
  */
 @AllArgsConstructor
 public class DefaultHandler implements Handler<RoutingContext> {
@@ -52,7 +57,9 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	/** The handler data. */
 	private final HandlerData handlerData;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see io.vertx.core.Handler#handle(java.lang.Object)
 	 */
 	@Override
@@ -110,8 +117,10 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	/**
 	 * Catch invoke.
 	 *
-	 * @param routingContext the routing context
-	 * @param t the t
+	 * @param routingContext
+	 *            the routing context
+	 * @param t
+	 *            the t
 	 */
 	protected void catchInvoke(RoutingContext routingContext, Throwable t) {
 		// Any server error return internal server error
@@ -127,9 +136,12 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	/**
 	 * Handle authentication.
 	 *
-	 * @param routingContext the routing context
-	 * @param newInstance the new instance
-	 * @param parameters the parameters
+	 * @param routingContext
+	 *            the routing context
+	 * @param newInstance
+	 *            the new instance
+	 * @param parameters
+	 *            the parameters
 	 */
 	protected void handleAuthentication(RoutingContext routingContext, Object newInstance, Object[] parameters) {
 
@@ -166,9 +178,12 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	/**
 	 * Handle authorization.
 	 *
-	 * @param routingContext the routing context
-	 * @param newInstance the new instance
-	 * @param parameters the parameters
+	 * @param routingContext
+	 *            the routing context
+	 * @param newInstance
+	 *            the new instance
+	 * @param parameters
+	 *            the parameters
 	 */
 	protected void handleAuthorization(RoutingContext routingContext, Object newInstance, Object[] parameters) {
 		routingContext.user().isAuthorised(handlerData.autority(), authorizationResult -> {
@@ -192,10 +207,13 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	/**
 	 * Resolve parameter.
 	 *
-	 * @param parameter the parameter
-	 * @param routingContext the routing context
+	 * @param parameter
+	 *            the parameter
+	 * @param routingContext
+	 *            the routing context
 	 * @return the object
 	 */
+	@SuppressWarnings("unchecked")
 	protected Object resolveParameter(Parameter parameter, RoutingContext routingContext) {
 
 		if (parameter.getType().equals(RoutingContext.class)) {
@@ -214,6 +232,23 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		if (StringUtils.isNotEmpty(routingContext.request().getParam(parameter.getName()))) {
 
 			return routingContext.request().getParam(parameter.getName());
+		}
+
+		if (parameter.isAnnotationPresent(ArrayModel.class)) {
+
+			ArrayModel am = parameter.getAnnotation(ArrayModel.class);
+			Class<? extends Collection<?>> collection = (Class<? extends Collection<?>>) am.collectionClass();
+			Class<?> clazz = am.value();
+			return ArrayModelParser.toList(routingContext.getBody().toString(), collection, clazz);
+		}
+
+		if (parameter.isAnnotationPresent(MapModel.class)) {
+
+			MapModel mm = parameter.getAnnotation(MapModel.class);
+			Class<?> mapClazz = (Class<? extends Collection<?>>) mm.mapClass();
+			Class<?> key = mm.key();
+			Class<?> value = mm.value();
+			return MapModelParser.toMap(routingContext.getBody().toString(), mapClazz, key, value);
 		}
 
 		if (parameter.getType().getPackage().getName().endsWith(".model") || parameter.getType().isAnnotationPresent(Model.class)
@@ -259,8 +294,10 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	/**
 	 * Send status.
 	 *
-	 * @param routingContext the routing context
-	 * @param status the status
+	 * @param routingContext
+	 *            the routing context
+	 * @param status
+	 *            the status
 	 */
 	protected void sendStatus(RoutingContext routingContext, HttpResponseStatus status) {
 		routingContext.response().setStatusCode(status.code()).setStatusMessage(status.reasonPhrase()).end(status.reasonPhrase());
