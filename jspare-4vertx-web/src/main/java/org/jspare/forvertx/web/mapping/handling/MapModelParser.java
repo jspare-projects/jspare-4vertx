@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 JSpare.org.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package org.jspare.forvertx.web.mapping.handling;
 
 import static org.jspare.core.container.Environment.my;
@@ -11,14 +26,10 @@ import org.jspare.core.serializer.Json;
 import lombok.AllArgsConstructor;
 
 /**
- * Instantiates a new map model parser.
+ * The Class MapModelParser.
  *
- * @param mapClazz
- *            the map clazz
- * @param key
- *            the key
- * @param value
- *            the value
+ * @param <K> the key type
+ * @param <V> the value type
  */
 @AllArgsConstructor
 public class MapModelParser<K, V> implements ParameterizedType {
@@ -68,18 +79,12 @@ public class MapModelParser<K, V> implements ParameterizedType {
 	/**
 	 * To map.
 	 *
-	 * @param <K>
-	 *            the key type
-	 * @param <V>
-	 *            the value type
-	 * @param json
-	 *            the json
-	 * @param mapClazz
-	 *            the map clazz
-	 * @param key
-	 *            the key
-	 * @param value
-	 *            the value
+	 * @param <K> the key type
+	 * @param <V> the value type
+	 * @param json the json
+	 * @param mapClazz the map clazz
+	 * @param key the key
+	 * @param value the value
 	 * @return the map
 	 */
 	public static <K, V> Map<K, V> toMap(String json, Class<?> mapClazz, Class<K> key, Class<V> value) {
