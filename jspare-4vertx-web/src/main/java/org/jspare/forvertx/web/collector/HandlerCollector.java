@@ -31,6 +31,7 @@ import org.jspare.forvertx.web.mapping.authentication.Auth;
 import org.jspare.forvertx.web.mapping.authentication.IgnoreAuth;
 import org.jspare.forvertx.web.mapping.content.Consumes;
 import org.jspare.forvertx.web.mapping.content.Produces;
+import org.jspare.forvertx.web.mapping.documentation.Documentation;
 import org.jspare.forvertx.web.mapping.handlers.BlockingHandler;
 import org.jspare.forvertx.web.mapping.handlers.BodyEndHandler;
 import org.jspare.forvertx.web.mapping.handlers.FailureHandler;
@@ -70,6 +71,17 @@ public class HandlerCollector {
 			boolean hasMethodAuth = false;
 			boolean skipAuthorities = false;
 			String autority = StringUtils.EMPTY;
+			HandlerDocumentation hDocumentation = null;
+			
+			if(method.isAnnotationPresent(Documentation.class)){
+				Documentation documentation = method.getAnnotation(Documentation.class);
+				hDocumentation = new HandlerDocumentation();
+				hDocumentation.description(documentation.description());
+				hDocumentation.status(documentation.responseStatus());
+				hDocumentation.queryParameters(documentation.queryParameters());
+				hDocumentation.requestSchema(documentation.requestClass());
+				hDocumentation.responseSchema(documentation.responseClass());
+			}
 			
 			if (!method.isAnnotationPresent(IgnoreAuth.class)) {
 				if (method.isAnnotationPresent(Auth.class)) {
@@ -88,7 +100,7 @@ public class HandlerCollector {
 
 			HandlerData defaultHandlerData = new HandlerData().clazz(clazz).method(method).consumes(consumes).produces(produces)
 					.bodyEndHandler(bodyEndHandler).auth(hasMethodAuth).skipAuthorities(skipAuthorities).autority(autority)
-					.authProvider(transporter.getAuthProvider()).routeHandler(routeHandler);
+					.authProvider(transporter.getAuthProvider()).routeHandler(routeHandler).documentation(hDocumentation);
 
 			if (hasHttpMethodsPresents(method)) {
 

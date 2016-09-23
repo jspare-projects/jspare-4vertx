@@ -52,6 +52,7 @@ public class HandlerData implements Cloneable {
 	private boolean auth;
 	private boolean skipAuthorities;
 	private String autority;
+	private HandlerDocumentation documentation;
 
 	public String toStringLine() {
 		StringBuilder line = new StringBuilder();
