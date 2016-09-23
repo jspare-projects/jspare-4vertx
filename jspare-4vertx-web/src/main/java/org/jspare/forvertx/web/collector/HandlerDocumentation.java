@@ -18,9 +18,9 @@ package org.jspare.forvertx.web.collector;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.jspare.forvertx.web.mapping.documentation.QueryParameter;
 import org.jspare.forvertx.web.mapping.documentation.Status;
 
 import lombok.AllArgsConstructor;
@@ -34,7 +34,9 @@ import lombok.experimental.Accessors;
  */
 @Data
 
-/* (non-Javadoc)
+/*
+ * (non-Javadoc)
+ * 
  * @see java.lang.Object#hashCode()
  */
 @EqualsAndHashCode
@@ -48,34 +50,40 @@ import lombok.experimental.Accessors;
 /**
  * Instantiates a new handler documentation.
  *
- * @param description the description
- * @param status the status
- * @param queryParameters the query parameters
- * @param requestSchema the request schema
- * @param responseSchema the response schema
+ * @param description
+ *            the description
+ * @param status
+ *            the status
+ * @param queryParameters
+ *            the query parameters
+ * @param requestSchema
+ *            the request schema
+ * @param responseSchema
+ *            the response schema
  */
 @AllArgsConstructor
 public class HandlerDocumentation {
 
 	/** The description. */
 	private String description;
-	
+
 	/** The status. */
-	private Status[] status;
-	
+	private List<ResponseStatus> status;
+
 	/** The query parameters. */
-	private QueryParameter[] queryParameters;
-	
+	private List<QueryParameter> queryParameters;
+
 	/** The request schema. */
 	private Map<String, String> requestSchema;
-	
+
 	/** The response schema. */
 	private Map<String, String> responseSchema;
 
 	/**
 	 * Request schema.
 	 *
-	 * @param clazz the clazz
+	 * @param clazz
+	 *            the clazz
 	 */
 	public void requestSchema(Class<?> clazz) {
 		this.requestSchema = buildSchema(clazz);
@@ -84,32 +92,61 @@ public class HandlerDocumentation {
 	/**
 	 * Response schema.
 	 *
-	 * @param clazz the clazz
+	 * @param clazz
+	 *            the clazz
 	 */
 	public void responseSchema(Class<?> clazz) {
 		this.responseSchema = buildSchema(clazz);
 	}
-	
+
 	/**
 	 * Builds the schema.
 	 *
-	 * @param clazz the clazz
+	 * @param clazz
+	 *            the clazz
 	 * @return the map
 	 */
 	private Map<String, String> buildSchema(Class<?> clazz) {
 		Map<String, String> schema = new HashMap<>();
-		for (Field f : clazz.getDeclaredFields()) {
-			if(!Modifier.isTransient(f.getModifiers())){
+		extractFields(clazz, schema);
+		if (clazz.getSuperclass() != null) {
 
-				schema.put(f.getName(), f.getType().getSimpleName());
-			}
-		}
-		for (Field f : clazz.getSuperclass().getDeclaredFields()) {
-			if(!Modifier.isTransient(f.getModifiers())){
-
-				schema.put(f.getName(), f.getType().getSimpleName());
-			}
+			extractFields(clazz.getSuperclass(), schema);
 		}
 		return schema;
+	}
+
+	protected void extractFields(Class<?> clazz, Map<String, String> schema) {
+		for (Field f : clazz.getDeclaredFields()) {
+			if (!Modifier.isTransient(f.getModifiers())) {
+
+				schema.put(f.getName(), f.getType().getSimpleName());
+			}
+		}
+	}
+
+	@Data
+	public static class QueryParameter {
+
+		public QueryParameter(org.jspare.forvertx.web.mapping.documentation.QueryParameter aQueryParameter) {
+			this.key = aQueryParameter.key();
+			this.description = aQueryParameter.description();
+		}
+
+		private String key;
+		private String description;
+	}
+
+	@Data
+	@AllArgsConstructor
+	public static class ResponseStatus {
+
+		public ResponseStatus(Status status) {
+			this.code = status.code();
+			this.description = status.description();
+		}
+
+		private int code;
+		private String description;
 	}
 }

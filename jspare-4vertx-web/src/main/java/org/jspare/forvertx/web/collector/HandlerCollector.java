@@ -77,8 +77,8 @@ public class HandlerCollector {
 				Documentation documentation = method.getAnnotation(Documentation.class);
 				hDocumentation = new HandlerDocumentation();
 				hDocumentation.description(documentation.description());
-				hDocumentation.status(documentation.responseStatus());
-				hDocumentation.queryParameters(documentation.queryParameters());
+				hDocumentation.status(Arrays.asList(documentation.responseStatus()).stream().map(s -> new HandlerDocumentation.ResponseStatus(s)).collect(Collectors.toList()));
+				hDocumentation.queryParameters(Arrays.asList(documentation.queryParameters()).stream().map(q -> new HandlerDocumentation.QueryParameter(q)).collect(Collectors.toList()));
 				hDocumentation.requestSchema(documentation.requestClass());
 				hDocumentation.responseSchema(documentation.responseClass());
 			}
