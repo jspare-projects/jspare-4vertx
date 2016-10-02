@@ -17,6 +17,7 @@ package org.jspare.forvertx.web.handler;
 
 import static org.jspare.core.container.Environment.my;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Collection;
@@ -55,7 +56,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultHandler implements Handler<RoutingContext> {
 
 	/** The handler data. */
-	private final HandlerData handlerData;
+	protected final HandlerData handlerData;
 
 	/*
 	 * (non-Javadoc)
@@ -63,55 +64,117 @@ public class DefaultHandler implements Handler<RoutingContext> {
 	 * @see io.vertx.core.Handler#handle(java.lang.Object)
 	 */
 	@Override
-	public void handle(RoutingContext routingContext) {
+	public void handle(RoutingContext ctx) {
 
 		try {
 
-			// Inject Request and Response if is Available
-			Object newInstance = my(HandlingFactory.class).instantiate(handlerData.clazz());
+			Object newInstance = instantiateHandler();
 
-			// If Route is handling by abstract Handling inject some resources
-			if (newInstance instanceof Handling) {
-
-				((Handling) newInstance).setReq(routingContext.request());
-				((Handling) newInstance).setRes(routingContext.response());
-				((Handling) newInstance).setCtx(routingContext);
-			}
-
-			// Prepare parameters to call method of route
-			Object[] parameters = new Object[handlerData.method().getParameterCount()];
-			int i = 0;
-			for (Parameter parameter : handlerData.method().getParameters()) {
-
-				parameters[i] = resolveParameter(parameter, routingContext);
-				i++;
-			}
+			setHandlingParameters(ctx, newInstance);
 
 			// Wrap bodyEndHandler to share routingContext
-			handlerData.bodyEndHandler().forEach(h -> routingContext.addBodyEndHandler(event -> {
+			handlerData.bodyEndHandler().forEach(h -> ctx.addBodyEndHandler(event -> {
 
-				h.handle(routingContext);
+				h.handle(ctx);
 			}));
 
-			// Check Authentication
-			if (handlerData.auth() && handlerData.authProvider() != null) {
+			Object[] parameters = collectParameters(ctx);
 
-				handleAuthentication(routingContext, newInstance, parameters);
-				return;
-			}
+			beforeInvoke(ctx);
 
-			if (handlerData.auth() && handlerData.authProvider() == null) {
+			invokeHandler(ctx, newInstance, parameters);
 
-				log.warn("AuthProvider is null, ignoring Authentication and Authorization");
-			}
-
-			// Call method of handler data
-			handlerData.method().invoke(newInstance, parameters);
+			afterInvoke(ctx);
 
 		} catch (Throwable t) {
 
-			catchInvoke(routingContext, t);
+			catchInvoke(ctx, t);
 		}
+	}
+
+	/**
+	 *  This method is called before of each handler invocation
+	 *
+	 * @param ctx the ctx
+	 */
+	protected void beforeInvoke(RoutingContext ctx) {
+	}
+
+	/**
+	 * This method is called after of each handler invocation
+	 *
+	 * @param ctx the ctx
+	 */
+	protected void afterInvoke(RoutingContext ctx) {
+	}
+
+	/**
+	 * Collect parameters. This method is responsible to collect all parameters
+	 * to send on handler method, resolving parameters and dependencies.
+	 * 
+	 * @param routingContext
+	 *            the routing context
+	 * @return the object[]
+	 */
+	protected Object[] collectParameters(RoutingContext routingContext) {
+		// Prepare parameters to call method of route
+		Object[] parameters = new Object[handlerData.method().getParameterCount()];
+		int i = 0;
+		for (Parameter parameter : handlerData.method().getParameters()) {
+
+			parameters[i] = resolveParameter(parameter, routingContext);
+			i++;
+		}
+		return parameters;
+	}
+
+	/**
+	 * Invoke handler. This method is responsible to invoke mapped route
+	 * handler.
+	 * 
+	 * @param routingContext
+	 *            the routing context
+	 * @param newInstance
+	 *            the new instance
+	 * @param parameters
+	 *            the parameters
+	 * @throws IllegalAccessException
+	 *             the illegal access exception
+	 * @throws InvocationTargetException
+	 *             the invocation target exception
+	 */
+	protected void invokeHandler(RoutingContext routingContext, Object newInstance, Object[] parameters)
+			throws IllegalAccessException, InvocationTargetException {
+		// Check Authentication
+		if (handlerData.auth() && handlerData.authProvider() != null) {
+
+			handleAuthentication(routingContext, newInstance, parameters);
+			return;
+		}
+
+		if (handlerData.auth() && handlerData.authProvider() == null) {
+
+			log.warn("AuthProvider is null, ignoring Authentication and Authorization");
+		}
+
+		// Call method of handler data
+		handlerData.method().invoke(newInstance, parameters);
+	}
+
+	protected void setHandlingParameters(RoutingContext routingContext, Object newInstance) {
+		// If Route is handling by abstract Handling inject some resources
+		if (newInstance instanceof Handling) {
+
+			((Handling) newInstance).setReq(routingContext.request());
+			((Handling) newInstance).setRes(routingContext.response());
+			((Handling) newInstance).setCtx(routingContext);
+		}
+	}
+
+	protected Object instantiateHandler() {
+		// Inject Request and Response if is Available
+		Object newInstance = my(HandlingFactory.class).instantiate(handlerData.clazz());
+		return newInstance;
 	}
 
 	/**
@@ -245,7 +308,7 @@ public class DefaultHandler implements Handler<RoutingContext> {
 		if (parameter.isAnnotationPresent(MapModel.class)) {
 
 			MapModel mm = parameter.getAnnotation(MapModel.class);
-			Class<?> mapClazz = (Class<? extends Collection<?>>) mm.mapClass();
+			Class<?> mapClazz = mm.mapClass();
 			Class<?> key = mm.key();
 			Class<?> value = mm.value();
 			return MapModelParser.toMap(routingContext.getBody().toString(), mapClazz, key, value);

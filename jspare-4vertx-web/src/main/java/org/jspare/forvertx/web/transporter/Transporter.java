@@ -148,12 +148,6 @@ public class Transporter extends AbstractVerticle {
 	 *
 	 * @return the port
 	 */
-	
-	/**
-	 * Gets the port.
-	 *
-	 * @return the port
-	 */
 	@Getter
 	private int port;
 
@@ -222,12 +216,12 @@ public class Transporter extends AbstractVerticle {
 
 	/** The route handler.
 	 *
-	 *	Define the default routeHandler any request
+	 *	Define the default routeHandlerClass any request
 	 *
 	 * @return the route handler
 	 * */
 	@Getter
-	private Class<? extends Handler<RoutingContext>> routeHandler;
+	private Class<? extends Handler<RoutingContext>> routeHandlerClass;
 	
 	
 	/**
@@ -279,14 +273,14 @@ public class Transporter extends AbstractVerticle {
 	 * @param httpServerOptions the http server options
 	 * @param routes the routes
 	 * @param handlers the handlers
-	 * @param routeHandler the route handler
+	 * @param routeHandlerClass the route handler
 	 * @param ignoreBodyHandler the ignore body handler
 	 * @param bodyHandler the body handler
 	 * @param defaultBodyEndHandlers the default body end handlers
 	 * @param authProvider the auth provider
 	 */
 	public Transporter(String name, int port, Vertx vertx, HttpServer httpServer, Router router, Object source4conventions,
-			HttpServerOptions httpServerOptions, List<Class<?>> routes, List<Handler<RoutingContext>> handlers, Class<? extends Handler<RoutingContext>> routeHandler, boolean ignoreBodyHandler, Handler<RoutingContext> bodyHandler,
+			HttpServerOptions httpServerOptions, List<Class<?>> routes, List<Handler<RoutingContext>> handlers, Class<? extends Handler<RoutingContext>> routeHandlerClass, boolean ignoreBodyHandler, Handler<RoutingContext> bodyHandler,
 			List<BodyEndHandler> defaultBodyEndHandlers, AuthProvider authProvider) {
 		super();
 		this.name = name;
@@ -298,7 +292,7 @@ public class Transporter extends AbstractVerticle {
 		this.httpServerOptions = httpServerOptions;
 		this.routes = routes;
 		this.handlers = handlers;
-		this.routeHandler = routeHandler;
+		this.routeHandlerClass = routeHandlerClass;
 		this.ignoreBodyHandler = ignoreBodyHandler;
 		this.bodyHandler = bodyHandler;
 		this.defaultBodyEndHandlers = defaultBodyEndHandlers;
@@ -378,9 +372,9 @@ public class Transporter extends AbstractVerticle {
 		}
 		
 		//Create or define the defaut route handler
-		if(this.routeHandler == null){
+		if(this.routeHandlerClass == null){
 			
-			this.routeHandler = DefaultHandler.class;
+			this.routeHandlerClass = DefaultHandler.class;
 		}
 
 		// Create default Handler to handle file uploads and body

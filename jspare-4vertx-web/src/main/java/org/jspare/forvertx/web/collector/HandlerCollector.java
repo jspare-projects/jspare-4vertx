@@ -66,7 +66,7 @@ public class HandlerCollector {
 
 			String consumes = method.isAnnotationPresent(Consumes.class) ? method.getAnnotation(Consumes.class).value() : StringUtils.EMPTY;
 			String produces = method.isAnnotationPresent(Produces.class) ? method.getAnnotation(Produces.class).value() : StringUtils.EMPTY;
-			Class<? extends Handler<RoutingContext>> routeHandler = transporter.getRouteHandler();
+			Class<? extends Handler<RoutingContext>> routeHandlerClass = transporter.getRouteHandlerClass();
 			List<org.jspare.forvertx.web.handler.BodyEndHandler> bodyEndHandler = collectBodyEndHandlers(transporter, method);
 			boolean hasMethodAuth = false;
 			boolean skipAuthorities = false;
@@ -100,7 +100,7 @@ public class HandlerCollector {
 
 			HandlerData defaultHandlerData = new HandlerData().clazz(clazz).method(method).consumes(consumes).produces(produces)
 					.bodyEndHandler(bodyEndHandler).auth(hasMethodAuth).skipAuthorities(skipAuthorities).autority(autority)
-					.authProvider(transporter.getAuthProvider()).routeHandler(routeHandler).documentation(hDocumentation);
+					.authProvider(transporter.getAuthProvider()).routeHandler(routeHandlerClass).documentation(hDocumentation);
 
 			if (hasHttpMethodsPresents(method)) {
 
