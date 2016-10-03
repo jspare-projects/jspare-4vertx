@@ -80,32 +80,12 @@ public class DefaultHandler implements Handler<RoutingContext> {
 
 			Object[] parameters = collectParameters(ctx);
 
-			beforeInvoke(ctx);
-
 			invokeHandler(ctx, newInstance, parameters);
-
-			afterInvoke(ctx);
 
 		} catch (Throwable t) {
 
 			catchInvoke(ctx, t);
 		}
-	}
-
-	/**
-	 *  This method is called before of each handler invocation
-	 *
-	 * @param ctx the ctx
-	 */
-	protected void beforeInvoke(RoutingContext ctx) {
-	}
-
-	/**
-	 * This method is called after of each handler invocation
-	 *
-	 * @param ctx the ctx
-	 */
-	protected void afterInvoke(RoutingContext ctx) {
 	}
 
 	/**
