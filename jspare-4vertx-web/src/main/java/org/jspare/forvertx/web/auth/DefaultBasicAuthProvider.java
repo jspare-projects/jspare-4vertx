@@ -74,6 +74,8 @@ public class DefaultBasicAuthProvider extends BasicAuthProvider {
 					}
 				}));
 			}
+			
+			return;
 
 		} catch (IOException e) {
 
